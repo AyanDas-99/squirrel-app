@@ -5,6 +5,7 @@ import 'package:squirrel_app/features/tags/domain/entities/tag.dart';
 
 abstract class TagRepository {
   Future<Either<Failure, List<Tag>>> getAllTags(AuthToken authToken);
+  Future<Either<Failure, List<Tag>>> getAllTagsForItem(AuthToken authToken, int itemId);
   Future<Either<Failure, bool>> removeTag(AuthToken authToken, int tagId);
   Future<Either<Failure, Tag>> addTag(AuthToken authToken, String tag);
 }
