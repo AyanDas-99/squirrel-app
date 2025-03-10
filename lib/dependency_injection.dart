@@ -14,8 +14,12 @@ import 'package:http/http.dart' as http;
 import 'package:squirrel_app/features/items/data/datasources/items_remote_datasource.dart';
 import 'package:squirrel_app/features/items/data/respositories/item_repository_impl.dart';
 import 'package:squirrel_app/features/items/domain/repositories/items_repositories.dart';
+import 'package:squirrel_app/features/items/domain/usecases/add_item.dart';
 import 'package:squirrel_app/features/items/domain/usecases/get_all_items.dart';
+import 'package:squirrel_app/features/items/domain/usecases/remove_item.dart';
+import 'package:squirrel_app/features/items/presentation/bloc/add_item_bloc.dart';
 import 'package:squirrel_app/features/items/presentation/bloc/item_bloc.dart';
+import 'package:squirrel_app/features/items/presentation/bloc/remove_item_bloc.dart';
 import 'package:squirrel_app/features/tags/data/datastores/tag_remote_datasource.dart';
 import 'package:squirrel_app/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:squirrel_app/features/tags/domain/repositories/tag_repository.dart';
@@ -55,6 +59,14 @@ Future<void> init() async {
     () => TransactionBloc(getAllTransactions: sl()),
   );
 
+  sl.registerFactory<AddItemBloc>(
+    () => AddItemBloc(addItem: sl()),
+  );
+  
+  sl.registerFactory<RemoveItemBloc>(
+    () => RemoveItemBloc(removeItem: sl()),
+  );
+
   // Usecases
   sl.registerLazySingleton(() => Signup(sl()));
   sl.registerLazySingleton(() => Login(sl()));
@@ -67,6 +79,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => RemoveTag(repository: sl()));
   sl.registerLazySingleton(() => GetAllTagsForItem(repository: sl()));
   sl.registerLazySingleton(() => GetAllTransactions(repository: sl()));
+  sl.registerLazySingleton(() => AddItem(sl()));
+  sl.registerLazySingleton(() => RemoveItem(sl()));
 
   // Repositories
   sl.registerLazySingleton<UserRepository>(

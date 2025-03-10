@@ -10,6 +10,11 @@ sealed class TransactionEvent extends Equatable {
 class LoadTransaction extends TransactionEvent {
   final AuthToken token;
   final int itemID;
+  final TransactionFilter filter;
 
-  const LoadTransaction({required this.token, required this.itemID});
+  const LoadTransaction({
+    required this.token,
+    required this.itemID,
+    required this.filter,
+  });
 }

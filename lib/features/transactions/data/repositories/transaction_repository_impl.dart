@@ -12,11 +12,11 @@ class TransactionRepositoryImpl implements TransactionRepository {
   TransactionRepositoryImpl({required this.transactionRemoteDatasource});
   @override
   Future<Either<Failure, Transaction>> getAllTransactions(
-    Tokenparam<int> tokenParamItemId,
+    Tokenparam<ItemIdAndTransactionFilter> tokenItemAndFilter,
   ) async {
     try {
       final transaction = await transactionRemoteDatasource.getAllTransactions(
-        tokenParamItemId,
+        tokenItemAndFilter,
       );
       return Right(transaction);
     } on AdditionsException catch (e) {

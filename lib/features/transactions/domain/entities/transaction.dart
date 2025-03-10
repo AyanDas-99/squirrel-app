@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:squirrel_app/core/metadata.dart';
 import 'package:squirrel_app/features/transactions/domain/entities/event.dart';
 
@@ -19,4 +20,29 @@ class Transaction {
     list.sort((a, b) => a.timestamp.compareTo(b.timestamp));
     return list;
   }
+}
+
+class TransactionFilter {
+  int page;
+  int? pageSize;
+  TransactionFilter({required this.page, this.pageSize});
+
+  String toQuery() {
+    final query = <String, dynamic>{};
+    query['page'] = page;
+    if (pageSize != null) {
+      query['page_size'] = pageSize;
+    }
+    return query.entries.map((e) => '${e.key}=${e.value}').join('&');
+  }
+}
+
+class ItemIdAndTransactionFilter {
+  final int itemId;
+  final TransactionFilter transactionFilter;
+
+  ItemIdAndTransactionFilter({
+    required this.itemId,
+    required this.transactionFilter,
+  });
 }

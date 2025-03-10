@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/core/errors/failures.dart';
+import 'package:squirrel_app/features/items/domain/entities/item.dart';
 import 'package:squirrel_app/features/items/domain/entities/items_and_meta.dart';
 
 abstract class ItemsRepositories {
@@ -8,6 +9,27 @@ abstract class ItemsRepositories {
     AuthToken token,
     ItemsFilter filter,
   );
+
+  Future<Either<Failure, bool>> removeItem(AuthToken token, int itemId);
+
+  Future<Either<Failure, Item>> addItem({
+    required AuthToken token,
+    required String name,
+    required int quantity,
+    required String remarks,
+  });
+}
+
+class ItemParams {
+  final String name;
+  final int quantity;
+  final String? remarks;
+
+  ItemParams({
+    required this.name,
+    required this.quantity,
+    required this.remarks,
+  });
 }
 
 class ItemsFilter {

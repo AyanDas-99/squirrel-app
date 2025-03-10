@@ -5,6 +5,7 @@ import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/core/errors/exceptions.dart';
 import 'package:squirrel_app/core/metadata.dart';
 import 'package:squirrel_app/features/items/data/models/items_model.dart';
+import 'package:squirrel_app/features/items/domain/entities/item.dart';
 import 'package:squirrel_app/features/items/domain/entities/items_and_meta.dart';
 import 'package:squirrel_app/features/items/domain/repositories/items_repositories.dart';
 
@@ -12,6 +13,19 @@ abstract class ItemRemoteDatasource {
   /// Throws [ServerException] if an error occurs.
   /// Throws [UserException] if the user is not authenticated.
   Future<ItemsAndMeta> getItems(AuthToken token, ItemsFilter filter);
+
+  /// Throws [ServerException] if an error occurs.
+  /// Throws [UserException] if the user is not authenticated.
+  Future<Item> addItem(
+    AuthToken token,
+    String name,
+    int quantity,
+    String remarks,
+  );
+
+  /// Throws [ServerException] if an error occurs.
+  /// Throws [UserException] if the user is not authenticated.
+  Future<bool> removeItem(AuthToken token, int itemId);
 }
 
 class ItemRemoteDatasourceImpl implements ItemRemoteDatasource {
@@ -53,6 +67,73 @@ class ItemRemoteDatasourceImpl implements ItemRemoteDatasource {
     } else if (result.statusCode == 500) {
       throw ServerException(message: json.decode(result.body)['error']);
     } else if (result.statusCode == 422) {
+      throw UserException(
+        message: json.decode(result.body)['error'].toString(),
+      );
+    } else {
+      throw UserException(
+        message: json.decode(result.body)['error'].toString(),
+      );
+    }
+  }
+
+  @override
+  Future<Item> addItem(
+    AuthToken token,
+    String name,
+    int quantity,
+    String remarks,
+  ) async {
+    http.Response result;
+    try {
+      result = await client.post(
+        Uri.parse('$host/items'),
+        headers: getHeader(token),
+        body: json.encode({
+          'name': name,
+          'quantity': quantity,
+          'remarks': remarks,
+        }),
+      );
+    } catch (e) {
+      throw ServerException(message: e.toString());
+    }
+    dev.log(result.body.toString());
+
+    if (result.statusCode == 201) {
+      final item = ItemModel.fromJson(json.decode(result.body)['item']);
+      return item;
+    } else if (result.statusCode == 500) {
+      throw ServerException(message: json.decode(result.body)['error']);
+    } else if (result.statusCode == 422) {
+      throw UserException(
+        message: json.decode(result.body)['error'].toString(),
+      );
+    } else {
+      throw UserException(
+        message: json.decode(result.body)['error'].toString(),
+      );
+    }
+  }
+
+  @override
+  Future<bool> removeItem(AuthToken token, int itemId) async {
+    http.Response result;
+    try {
+      result = await client.delete(
+        Uri.parse('$host/items/$itemId'),
+        headers: getHeader(token),
+      );
+    } catch (e) {
+      throw ServerException(message: e.toString());
+    }
+    dev.log(result.body.toString());
+
+    if (result.statusCode == 200) {
+      return true;
+    } else if (result.statusCode == 500) {
+      throw ServerException(message: json.decode(result.body)['error']);
+    } else if (result.statusCode == 404) {
       throw UserException(
         message: json.decode(result.body)['error'].toString(),
       );

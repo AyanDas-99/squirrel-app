@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:squirrel_app/dependency_injection.dart';
 import 'package:squirrel_app/core/auth/presentation/bloc/user_bloc.dart';
+import 'package:squirrel_app/features/items/presentation/bloc/add_item_bloc.dart';
 import 'package:squirrel_app/features/items/presentation/bloc/item_bloc.dart';
+import 'package:squirrel_app/features/items/presentation/bloc/remove_item_bloc.dart';
 import 'package:squirrel_app/features/tags/presentation/bloc/tags_bloc.dart';
 import 'package:squirrel_app/features/tags/presentation/bloc/tags_for_item_bloc.dart';
 import 'package:squirrel_app/features/transactions/presentation/bloc/transaction_bloc.dart';
@@ -23,6 +25,8 @@ class SquirrelApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => sl<UserBloc>()),
         BlocProvider(create: (context) => sl<ItemBloc>()),
+        BlocProvider(create: (context) => sl<RemoveItemBloc>()),
+        BlocProvider(create: (context) => sl<AddItemBloc>()),
         BlocProvider(create: (context) => sl<TagsBloc>()),
         BlocProvider(create: (context) => sl<TagsForItemBloc>()),
         BlocProvider(create: (context) => sl<TransactionBloc>()),

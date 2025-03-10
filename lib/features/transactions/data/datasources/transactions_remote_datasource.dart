@@ -13,7 +13,7 @@ import 'package:squirrel_app/features/transactions/domain/entities/transaction.d
 
 abstract class TransactionsRemoteDatasource {
   /// Throws [AdditionsException], [RemovalsException] or [IssuesException]
-  Future<Transaction> getAllTransactions(Tokenparam<int> tokenAndItemId);
+  Future<Transaction> getAllTransactions(Tokenparam<ItemIdAndTransactionFilter> tokenItemAndFilter);
 }
 
 class TransactionRemoteDatasourceImpl implements TransactionsRemoteDatasource {
@@ -30,7 +30,7 @@ class TransactionRemoteDatasourceImpl implements TransactionsRemoteDatasource {
 
   TransactionRemoteDatasourceImpl({required this.client});
   @override
-  Future<Transaction> getAllTransactions(Tokenparam<int> tokenAndItemId) async {
+  Future<Transaction> getAllTransactions(Tokenparam<ItemIdAndTransactionFilter> tokenItemAndFilter) async {
     http.Response additionResult;
     http.Response issuesResult;
     http.Response removalsResult;
@@ -44,8 +44,8 @@ class TransactionRemoteDatasourceImpl implements TransactionsRemoteDatasource {
     // Getting additions
     try {
       additionResult = await client.get(
-        Uri.parse('$host/additions/${tokenAndItemId.param}'),
-        headers: getHeader(tokenAndItemId.token),
+        Uri.parse('$host/additions/${tokenItemAndFilter.param.itemId}?${tokenItemAndFilter.param.transactionFilter.toQuery()}'),
+        headers: getHeader(tokenItemAndFilter.token),
       );
     } catch (e) {
       throw AdditionsException(message: e.toString());
@@ -77,8 +77,8 @@ class TransactionRemoteDatasourceImpl implements TransactionsRemoteDatasource {
     // Getting removals
     try {
       removalsResult = await client.get(
-        Uri.parse('$host/removals/${tokenAndItemId.param}'),
-        headers: getHeader(tokenAndItemId.token),
+        Uri.parse('$host/removals/${tokenItemAndFilter.param.itemId}?${tokenItemAndFilter.param.transactionFilter.toQuery()}'),
+        headers: getHeader(tokenItemAndFilter.token),
       );
     } catch (e) {
       throw RemovalsException(message: e.toString());
@@ -118,8 +118,8 @@ class TransactionRemoteDatasourceImpl implements TransactionsRemoteDatasource {
     // Getting issues
     try {
       issuesResult = await client.get(
-        Uri.parse('$host/issues/${tokenAndItemId.param}'),
-        headers: getHeader(tokenAndItemId.token),
+        Uri.parse('$host/issues/${tokenItemAndFilter.param.itemId}?${tokenItemAndFilter.param.transactionFilter.toQuery()}'),
+        headers: getHeader(tokenItemAndFilter.token),
       );
     } catch (e) {
       throw IssuesException(message: e.toString());

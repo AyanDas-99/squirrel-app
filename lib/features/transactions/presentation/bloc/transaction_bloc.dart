@@ -29,7 +29,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           token: event.token.token,
           expiry: event.token.expiry,
         ),
-        param: event.itemID,
+        param: ItemIdAndTransactionFilter(
+          itemId: event.itemID,
+          transactionFilter: event.filter,
+        ),
       ),
     );
 
