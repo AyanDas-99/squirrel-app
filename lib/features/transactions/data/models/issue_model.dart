@@ -12,10 +12,10 @@ class IssueModel extends Issue {
   factory IssueModel.fromJson(Map<String, dynamic> json) {
     return IssueModel(
       id: json['id'] as int,
-      itemId: json['itemId'] as int,
+      itemId: json['item_id'] as int,
       quantity: json['quantity'] as int,
-      issuedTo: json['issuedTo'] as String,
-      issuedAt: DateTime.parse(json['issuedAt']),
+      issuedTo: json['issued_to'] as String,
+      issuedAt: DateTime.parse(json['issued_at']),
     );
   }
 }

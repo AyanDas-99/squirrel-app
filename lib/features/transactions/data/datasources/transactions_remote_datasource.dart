@@ -9,11 +9,14 @@ import 'package:squirrel_app/core/tokenParam.dart';
 import 'package:squirrel_app/features/transactions/data/models/addition_model.dart';
 import 'package:squirrel_app/features/transactions/data/models/issue_model.dart';
 import 'package:squirrel_app/features/transactions/data/models/removal_model.dart';
+import 'package:squirrel_app/features/transactions/domain/entities/event.dart';
 import 'package:squirrel_app/features/transactions/domain/entities/transaction.dart';
 
 abstract class TransactionsRemoteDatasource {
   /// Throws [AdditionsException], [RemovalsException] or [IssuesException]
   Future<Transaction> getAllTransactions(Tokenparam<ItemIdAndTransactionFilter> tokenItemAndFilter);
+  /// Throws [ServerException], [UserException]
+  Future<Issue> issueItem({required AuthToken token, required int itemId, required int quantity ,required String issueTo}); 
 }
 
 class TransactionRemoteDatasourceImpl implements TransactionsRemoteDatasource {
@@ -156,5 +159,37 @@ class TransactionRemoteDatasourceImpl implements TransactionsRemoteDatasource {
       metadata: metadata,
     );
     return transaction;
+  }
+  
+  @override
+  Future<Issue> issueItem({required AuthToken token, required int itemId, required int quantity, required String issueTo}) async{
+    http.Response result;
+    try {
+      result = await client.post(
+        Uri.parse('$host/issues'),
+        headers: getHeader(token),
+        body: json.encode({
+          'item_id': itemId,
+          'quantity': quantity,
+          'issued_to': issueTo,
+        }),
+      );
+    } catch (e) {
+      throw ServerException(message: e.toString());
+    }
+    dev.log(result.body.toString());
+
+    if (result.statusCode == 201) {
+      final issue = IssueModel.fromJson(
+        json.decode(result.body)['issue'],
+      );
+      return issue;
+    } else if (result.statusCode == 500) {
+      throw ServerException(message: json.decode(result.body)['error']);
+    }  else {
+      throw UserException(
+        message: json.decode(result.body)['error'].toString(),
+      );
+    }
   }
 }

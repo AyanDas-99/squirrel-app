@@ -37,6 +37,8 @@ import 'package:squirrel_app/features/transactions/data/datasources/transactions
 import 'package:squirrel_app/features/transactions/data/repositories/transaction_repository_impl.dart';
 import 'package:squirrel_app/features/transactions/domain/repositories/transaction_repository.dart';
 import 'package:squirrel_app/features/transactions/domain/usecases/get_all_transactions.dart';
+import 'package:squirrel_app/features/transactions/domain/usecases/issue_item.dart';
+import 'package:squirrel_app/features/transactions/presentation/bloc/issue_item_bloc.dart';
 import 'package:squirrel_app/features/transactions/presentation/bloc/transaction_bloc.dart';
 
 final sl = GetIt.instance;
@@ -81,6 +83,11 @@ Future<void> init() async {
     () => ItemRefillBloc(refillItem: sl()),
   );
 
+
+  sl.registerFactory<IssueItemBloc>(
+    () => IssueItemBloc(issueItem: sl()),
+  );
+
   // Usecases
   sl.registerLazySingleton(() => Signup(sl()));
   sl.registerLazySingleton(() => Login(sl()));
@@ -97,6 +104,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => RemoveItem(sl()));
   sl.registerLazySingleton(() => GetItemById(sl()));
   sl.registerLazySingleton(() => RefillItem(itemsRepositories: sl()));
+  sl.registerLazySingleton(() => IssueItem(repository: sl()));
 
   // Repositories
   sl.registerLazySingleton<UserRepository>(

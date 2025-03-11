@@ -5,6 +5,7 @@ import 'package:squirrel_app/features/items/presentation/bloc/item_by_id_bloc.da
 import 'package:squirrel_app/features/items/presentation/pages/add_stock_page.dart';
 import 'package:squirrel_app/features/items/presentation/widgets/item_menu.dart';
 import 'package:squirrel_app/features/tags/presentation/bloc/tags_for_item_bloc.dart';
+import 'package:squirrel_app/features/transactions/presentation/screens/issue_item_screen.dart';
 import 'package:squirrel_app/features/transactions/presentation/widgets/transaction_tab.dart';
 
 class ItemDetailScreen extends StatefulWidget {
@@ -105,7 +106,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                             const SizedBox(width: 8),
                             Text(
                               'Current Stock: ${state.item.remaining}',
-                              style: const TextStyle(fontWeight: FontWeight.w500),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ],
                         ),
@@ -129,10 +132,11 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                       children:
                                           state.tags.map((tag) {
                                             return Container(
-                                              padding: const EdgeInsets.symmetric(
-                                                horizontal: 12,
-                                                vertical: 6,
-                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 12,
+                                                    vertical: 6,
+                                                  ),
                                               decoration: BoxDecoration(
                                                 color: Colors.grey[100],
                                                 borderRadius:
@@ -180,7 +184,15 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                             Expanded(
                               child: ElevatedButton.icon(
                                 onPressed: () {
-                                  // Issue item
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) => IssueItemScreen(
+                                            itemId: widget.itemId,
+                                            token: widget.token,
+                                          ),
+                                    ),
+                                  );
                                 },
                                 icon: const Icon(Icons.arrow_downward),
                                 label: const Text('Issue Item'),
@@ -198,16 +210,19 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                       ],
                     ),
                   ),
-      
+
                   // Transactions Section
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                     child: const Text(
                       'Transactions',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
-      
+
                   // Tab Bar
                   Expanded(
                     child: TransactionTab(

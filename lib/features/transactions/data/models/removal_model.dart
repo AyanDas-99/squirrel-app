@@ -12,10 +12,10 @@ class RemovalModel extends Removal {
   factory RemovalModel.fromJson(Map<String, dynamic> json) {
     return RemovalModel(
       id: json['id'] as int,
-      itemId: json['itemId'] as int,
+      itemId: json['item_id'] as int,
       quantity: json['quantity'] as int,
       remarks: json['remarks'],
-      removedAt: DateTime.parse(json['removedAt']),
+      removedAt: DateTime.parse(json['removed_at']),
     );
   }
 }

@@ -9,6 +9,7 @@ import 'package:squirrel_app/features/items/presentation/bloc/item_refill_bloc.d
 import 'package:squirrel_app/features/items/presentation/bloc/remove_item_bloc.dart';
 import 'package:squirrel_app/features/tags/presentation/bloc/tags_bloc.dart';
 import 'package:squirrel_app/features/tags/presentation/bloc/tags_for_item_bloc.dart';
+import 'package:squirrel_app/features/transactions/presentation/bloc/issue_item_bloc.dart';
 import 'package:squirrel_app/features/transactions/presentation/bloc/transaction_bloc.dart';
 import 'package:squirrel_app/screen_controller.dart';
 import 'dependency_injection.dart' as di;
@@ -34,6 +35,7 @@ class SquirrelApp extends StatelessWidget {
         BlocProvider(create: (context) => sl<TransactionBloc>()),
         BlocProvider(create: (context) => sl<ItemByIdBloc>()),
         BlocProvider(create: (context) => sl<ItemRefillBloc>()),
+        BlocProvider(create: (context) => sl<IssueItemBloc>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
