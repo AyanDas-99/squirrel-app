@@ -3,6 +3,7 @@ import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/core/errors/failures.dart';
 import 'package:squirrel_app/features/items/domain/entities/item.dart';
 import 'package:squirrel_app/features/items/domain/entities/items_and_meta.dart';
+import 'package:squirrel_app/features/transactions/domain/entities/event.dart';
 
 abstract class ItemsRepositories {
   Future<Either<Failure, ItemsAndMeta>> getItems(
@@ -12,11 +13,32 @@ abstract class ItemsRepositories {
 
   Future<Either<Failure, bool>> removeItem(AuthToken token, int itemId);
 
+  Future<Either<Failure, Item>> getItemById(AuthToken token, int itemId);
+
   Future<Either<Failure, Item>> addItem({
     required AuthToken token,
     required String name,
     required int quantity,
     required String remarks,
+  });
+
+  Future<Either<Failure, Addition>> refillItem({
+    required AuthToken token,
+    required int itemId,
+    required int quantity,
+    required String remarks,
+  });
+}
+
+class ItemRefillParams {
+  final int itemId;
+  final int quantity;
+  final String remarks;
+
+  ItemRefillParams({
+    required this.itemId,
+    required this.quantity,
+    required this.remarks,
   });
 }
 

@@ -8,6 +8,8 @@ import 'package:squirrel_app/features/items/data/models/items_model.dart';
 import 'package:squirrel_app/features/items/domain/entities/item.dart';
 import 'package:squirrel_app/features/items/domain/entities/items_and_meta.dart';
 import 'package:squirrel_app/features/items/domain/repositories/items_repositories.dart';
+import 'package:squirrel_app/features/transactions/data/models/addition_model.dart';
+import 'package:squirrel_app/features/transactions/domain/entities/event.dart';
 
 abstract class ItemRemoteDatasource {
   /// Throws [ServerException] if an error occurs.
@@ -26,6 +28,19 @@ abstract class ItemRemoteDatasource {
   /// Throws [ServerException] if an error occurs.
   /// Throws [UserException] if the user is not authenticated.
   Future<bool> removeItem(AuthToken token, int itemId);
+
+  /// Throws [ServerException] if an error occurs.
+  /// Throws [UserException] if the user is not authenticated.
+  Future<Addition> refillItem(
+    AuthToken token,
+    int itemId,
+    int quantity,
+    String remarks,
+  );
+
+  /// Throws [ServerException] if an error occurs.
+  /// Throws [UserException] if the user is not authenticated.
+  Future<Item> getItemById(AuthToken token, int itemId);
 }
 
 class ItemRemoteDatasourceImpl implements ItemRemoteDatasource {
@@ -134,6 +149,86 @@ class ItemRemoteDatasourceImpl implements ItemRemoteDatasource {
     } else if (result.statusCode == 500) {
       throw ServerException(message: json.decode(result.body)['error']);
     } else if (result.statusCode == 404) {
+      throw UserException(
+        message: json.decode(result.body)['error'].toString(),
+      );
+    } else {
+      throw UserException(
+        message: json.decode(result.body)['error'].toString(),
+      );
+    }
+  }
+
+  @override
+  Future<Addition> refillItem(
+    AuthToken token,
+    int itemId,
+    int quantity,
+    String remarks,
+  ) async {
+    http.Response result;
+    try {
+      result = await client.post(
+        Uri.parse('$host/additions'),
+        headers: getHeader(token),
+        body: json.encode({
+          'item_id': itemId,
+          'quantity': quantity,
+          'remarks': remarks,
+        }),
+      );
+    } catch (e) {
+      throw ServerException(message: e.toString());
+    }
+    dev.log(result.body.toString());
+
+    if (result.statusCode == 200) {
+      final addition = AdditionModel.fromJson(
+        json.decode(result.body)['addition'],
+      );
+      return addition;
+    } else if (result.statusCode == 500) {
+      throw ServerException(message: json.decode(result.body)['error']);
+    } else if (result.statusCode == 404) {
+      throw UserException(
+        message: json.decode(result.body)['error'].toString(),
+      );
+    } else if (result.statusCode == 422) {
+      throw UserException(
+        message: json.decode(result.body)['error'].toString(),
+      );
+    } else {
+      throw UserException(
+        message: json.decode(result.body)['error'].toString(),
+      );
+    }
+  }
+
+  @override
+  Future<Item> getItemById(AuthToken token, int itemId) async {
+    http.Response result;
+    try {
+      result = await client.get(
+        Uri.parse('$host/items/$itemId'),
+        headers: getHeader(token),
+      );
+    } catch (e) {
+      throw ServerException(message: e.toString());
+    }
+    dev.log(result.body.toString());
+
+    if (result.statusCode == 200) {
+      final item = ItemModel.fromJson(
+        json.decode(result.body)['item'],
+      );
+      return item;
+    } else if (result.statusCode == 500) {
+      throw ServerException(message: json.decode(result.body)['error']);
+    } else if (result.statusCode == 404) {
+      throw UserException(
+        message: json.decode(result.body)['error'].toString(),
+      );
+    } else if (result.statusCode == 422) {
       throw UserException(
         message: json.decode(result.body)['error'].toString(),
       );

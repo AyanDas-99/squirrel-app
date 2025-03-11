@@ -230,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       MaterialPageRoute(
                                         builder:
                                             (context) => ItemDetailScreen(
-                                              item: item,
+                                              itemId: item.id,
                                               token: widget.authToken,
                                             ),
                                       ),

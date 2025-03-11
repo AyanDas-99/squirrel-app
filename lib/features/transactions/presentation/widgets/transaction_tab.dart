@@ -52,85 +52,91 @@ class _TransactionTabState extends State<TransactionTab>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TabBar(
-          controller: _tabController,
-          labelColor: Colors.blue,
-          unselectedLabelColor: Colors.grey,
-          indicatorColor: Colors.blue,
-          tabs: const [
-            Tab(text: 'All'),
-            Tab(text: 'Additions'),
-            Tab(text: 'Issues'),
-            Tab(text: 'Removals'),
-          ],
-        ),
-
-        // Transaction Lists
-        BlocBuilder<TransactionBloc, TransactionState>(
-          builder: (context, state) {
-            return switch (state) {
-              TransactionInitial() => Center(
-                child: CircularProgressIndicator(),
-              ),
-              TransactionLoading() => Center(
-                child: CircularProgressIndicator(),
-              ),
-              TransactionLoaded() => Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildTransactionList(state.transaction.getSortedList()),
-                    _buildTransactionList(state.transaction.additions),
-                    _buildTransactionList(state.transaction.issues),
-                    _buildTransactionList(state.transaction.removals),
-                  ],
+    return RefreshIndicator(
+      onRefresh: () {
+        _loadTransactions();
+        return Future.delayed(const Duration(seconds: 1));
+      },
+      child: Column(
+        children: [
+          TabBar(
+            controller: _tabController,
+            labelColor: Colors.blue,
+            unselectedLabelColor: Colors.grey,
+            indicatorColor: Colors.blue,
+            tabs: const [
+              Tab(text: 'All'),
+              Tab(text: 'Additions'),
+              Tab(text: 'Issues'),
+              Tab(text: 'Removals'),
+            ],
+          ),
+      
+          // Transaction Lists
+          BlocBuilder<TransactionBloc, TransactionState>(
+            builder: (context, state) {
+              return switch (state) {
+                TransactionInitial() => Center(
+                  child: CircularProgressIndicator(),
                 ),
-              ),
-              TransactionError() => Text(state.failure.properties.toString()),
-            };
-          },
-        ),
-
-        BlocBuilder<TransactionBloc, TransactionState>(
-          builder: (context, state) {
-            return switch (state) {
-              TransactionLoaded() =>
-                (state.transaction.metadata.isAnyNull())
-                    ? Container()
-                    : Row(
-                      children: [
-                        IconButton(
-                          onPressed:
-                              (state.transaction.metadata.currentPage! >
-                                      state.transaction.metadata.firstPage!)
-                                  ? () {
-                                    filter.page -= 1;
-                                    _loadTransactions();
-                                  }
-                                  : null,
-                          icon: Icon(Icons.arrow_back_ios_new_rounded),
-                        ),
-                        Text(state.transaction.metadata.currentPage.toString()),
-                        IconButton(
-                          onPressed:
-                              (state.transaction.metadata.currentPage! <
-                                      state.transaction.metadata.lastPage!)
-                                  ? () {
-                                    filter.page += 1;
-                                    _loadTransactions();
-                                  }
-                                  : null,
-                          icon: Icon(Icons.arrow_forward_ios_rounded),
-                        ),
-                      ],
-                    ),
-              _ => Container(),
-            };
-          },
-        ),
-      ],
+                TransactionLoading() => Center(
+                  child: CircularProgressIndicator(),
+                ),
+                TransactionLoaded() => Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _buildTransactionList(state.transaction.getSortedList()),
+                      _buildTransactionList(state.transaction.additions),
+                      _buildTransactionList(state.transaction.issues),
+                      _buildTransactionList(state.transaction.removals),
+                    ],
+                  ),
+                ),
+                TransactionError() => Text(state.failure.properties.toString()),
+              };
+            },
+          ),
+      
+          BlocBuilder<TransactionBloc, TransactionState>(
+            builder: (context, state) {
+              return switch (state) {
+                TransactionLoaded() =>
+                  (state.transaction.metadata.isAnyNull())
+                      ? Container()
+                      : Row(
+                        children: [
+                          IconButton(
+                            onPressed:
+                                (state.transaction.metadata.currentPage! >
+                                        state.transaction.metadata.firstPage!)
+                                    ? () {
+                                      filter.page -= 1;
+                                      _loadTransactions();
+                                    }
+                                    : null,
+                            icon: Icon(Icons.arrow_back_ios_new_rounded),
+                          ),
+                          Text(state.transaction.metadata.currentPage.toString()),
+                          IconButton(
+                            onPressed:
+                                (state.transaction.metadata.currentPage! <
+                                        state.transaction.metadata.lastPage!)
+                                    ? () {
+                                      filter.page += 1;
+                                      _loadTransactions();
+                                    }
+                                    : null,
+                            icon: Icon(Icons.arrow_forward_ios_rounded),
+                          ),
+                        ],
+                      ),
+                _ => Container(),
+              };
+            },
+          ),
+        ],
+      ),
     );
   }
 
