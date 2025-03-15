@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/core/auth/presentation/bloc/user_bloc.dart';
+import 'package:squirrel_app/core/auth/presentation/pages/login_screen.dart';
 import 'package:squirrel_app/features/tags/presentation/widgets/tags_section.dart';
 import 'package:squirrel_app/features/users/presentation/screens/admin_user_management_screen.dart';
+import 'package:squirrel_app/screen_controller.dart';
 
 class SettingsScreen extends StatefulWidget {
   final AuthToken authToken;
@@ -48,7 +50,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             icon: const Icon(Icons.logout),
             onPressed: () {
               context.read<UserBloc>().add(LogoutEvent());
-              Navigator.of(context).maybePop();
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => ScreenController()),
+                (route) => false,
+              );
             },
           ),
         ],
