@@ -94,4 +94,26 @@ class ItemRepositoryImpl implements ItemsRepositories {
       return Left(UserFailure(properties: [e.message]));
     }
   }
+
+  @override
+  Future<Either<Failure, Removal>> addRemoval({
+    required AuthToken token,
+    required int itemId,
+    required int quantity,
+    required String remarks,
+  }) async {
+    try {
+      final removal = await itemRemoteDatasource.addRemoval(
+        token,
+        itemId,
+        quantity,
+        remarks,
+      );
+      return Right(removal);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(properties: [e.message]));
+    } on UserException catch (e) {
+      return Left(UserFailure(properties: [e.message]));
+    }
+  }
 }

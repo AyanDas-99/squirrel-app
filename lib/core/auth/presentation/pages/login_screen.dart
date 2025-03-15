@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:squirrel_app/core/auth/presentation/bloc/user_bloc.dart';
-import 'package:squirrel_app/features/items/presentation/pages/home_screen.dart';
 import 'package:squirrel_app/core/auth/presentation/pages/signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {

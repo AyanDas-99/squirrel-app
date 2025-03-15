@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:squirrel_app/core/auth/domain/entities/user.dart';
 import 'package:squirrel_app/core/errors/exceptions.dart';
 import 'package:squirrel_app/core/auth/data/models/auth_token_model.dart';
 import 'package:squirrel_app/core/auth/data/models/user_model.dart';

@@ -6,11 +6,34 @@ import 'package:squirrel_app/core/tokenParam.dart';
 import 'package:squirrel_app/features/items/domain/repositories/items_repositories.dart';
 import 'package:squirrel_app/features/items/presentation/bloc/item_bloc.dart';
 import 'package:squirrel_app/features/items/presentation/bloc/remove_item_bloc.dart';
+import 'package:squirrel_app/features/items/presentation/pages/remove_stock_page.dart';
+import 'package:squirrel_app/features/items/presentation/widgets/manage_item_tags_bottom_sheet.dart';
 
-class ItemMenu extends StatelessWidget {
+class ItemMenu extends StatefulWidget {
   final AuthToken token;
   final int itemId;
   const ItemMenu({super.key, required this.token, required this.itemId});
+
+  @override
+  State<ItemMenu> createState() => _ItemMenuState();
+}
+
+class _ItemMenuState extends State<ItemMenu> {
+  void showTagModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return ManageItemTagsBottomSheet(
+          token: widget.token,
+          itemId: widget.itemId,
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,29 +55,66 @@ class ItemMenu extends StatelessWidget {
             PopupMenuItem(
               child: Row(
                 children: [
-                  Text('Remove', style: TextStyle(fontSize: 16)),
+                  Text('Delete Item', style: TextStyle(fontSize: 16)),
                   Spacer(),
-                  Icon(Icons.delete, color: Colors.red),
+                  Icon(Icons.delete_forever, color: Colors.red),
                 ],
               ),
               onTap:
                   () => {
                     context.read<RemoveItemBloc>().add(
-                      EventRemoveItem(token: token, itemId: itemId),
+                      EventRemoveItem(
+                        token: widget.token,
+                        itemId: widget.itemId,
+                      ),
                     ),
 
                     context.read<ItemBloc>().add(
                       GetItems(
                         tokenparam: Tokenparam(
                           token: AuthTokenModel(
-                            token: token.token,
-                            expiry: token.expiry,
+                            token: widget.token.token,
+                            expiry: widget.token.expiry,
                           ),
                           param: ItemsFilter(page: 1),
                         ),
                       ),
                     ),
                     Navigator.of(context).maybePop(),
+                  },
+            ),
+
+            PopupMenuItem(
+              child: Row(
+                children: [
+                  Text('Manage Tags', style: TextStyle(fontSize: 16)),
+                  Spacer(),
+                  Icon(Icons.tag, color: Colors.blue),
+                ],
+              ),
+              onTap: () => showTagModal(context),
+            ),
+
+            PopupMenuItem(
+              child: Row(
+                children: [
+                  Text('Remove Stock', style: TextStyle(fontSize: 16)),
+                  Spacer(),
+                  Icon(Icons.delete, color: Colors.red),
+                ],
+              ),
+              onTap:
+                  () => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => RemoveStockPage(
+                              itemId: widget.itemId,
+                              token: widget.token,
+                            ),
+                      ),
+                    ),
                   },
             ),
           ],

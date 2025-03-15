@@ -5,6 +5,7 @@ import 'package:squirrel_app/features/items/presentation/bloc/item_by_id_bloc.da
 import 'package:squirrel_app/features/items/presentation/pages/add_stock_page.dart';
 import 'package:squirrel_app/features/items/presentation/widgets/item_menu.dart';
 import 'package:squirrel_app/features/tags/presentation/bloc/tags_for_item_bloc.dart';
+import 'package:squirrel_app/features/tags/presentation/widgets/item_tags_list.dart';
 import 'package:squirrel_app/features/transactions/presentation/screens/issue_item_screen.dart';
 import 'package:squirrel_app/features/transactions/presentation/widgets/transaction_tab.dart';
 
@@ -80,30 +81,16 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          state.item.name,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
                         Row(
                           children: [
                             Text(
-                              state.item.remarks,
-                              style: TextStyle(color: Colors.grey[600]),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              width: 4,
-                              height: 4,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.grey[400],
+                              state.item.name,
+                              style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            Spacer(),
                             Text(
                               'Current Stock: ${state.item.remaining}',
                               style: const TextStyle(
@@ -112,49 +99,16 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                             ),
                           ],
                         ),
+                        if (state.item.remarks.isNotEmpty) ...[
+                          const SizedBox(height: 10),
+                          Text(
+                            state.item.remarks,
+                            style: TextStyle(color: Colors.grey[600]),
+                          ),
+                        ],
                         const SizedBox(height: 12),
-                        BlocBuilder<TagsForItemBloc, TagsForItemState>(
-                          builder: (context, state) {
-                            return switch (state) {
-                              TagsForItemInitial() => Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                              TagsForItemLoading() => Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                              TagsForItemError() => Text(state.message),
-                              TagsForItemLoaded() =>
-                                (state.tags.isEmpty)
-                                    ? Container()
-                                    : Wrap(
-                                      spacing: 8,
-                                      runSpacing: 8,
-                                      children:
-                                          state.tags.map((tag) {
-                                            return Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 12,
-                                                    vertical: 6,
-                                                  ),
-                                              decoration: BoxDecoration(
-                                                color: Colors.grey[100],
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                              ),
-                                              child: Text(tag.tag),
-                                            );
-                                          }).toList(),
-                                    ),
-                            };
-                          },
-                        ),
+                        ItemTagsList(),
                         const SizedBox(height: 16),
-                        Text(
-                          state.item.remarks,
-                          style: TextStyle(color: Colors.grey[700]),
-                        ),
-                        const SizedBox(height: 24),
                         Row(
                           children: [
                             Expanded(
@@ -170,10 +124,11 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                     ),
                                   );
                                 },
-                                icon: const Icon(Icons.add),
-                                label: const Text('Add Stock'),
+                                icon: const Icon(Icons.add, color: Colors.white),
+                                label: const Text('Add Stock', style: TextStyle(color: Colors.white),),
                                 style: ElevatedButton.styleFrom(
                                   elevation: 0,
+                                  backgroundColor: Colors.green,
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 12,
                                   ),
@@ -194,11 +149,17 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                     ),
                                   );
                                 },
-                                icon: const Icon(Icons.arrow_downward),
-                                label: const Text('Issue Item'),
+                                icon: const Icon(
+                                  Icons.arrow_downward,
+                                  color: Colors.white,
+                                ),
+                                label: const Text(
+                                  'Issue Item',
+                                  style: TextStyle(color: Colors.white),
+                                ),
                                 style: ElevatedButton.styleFrom(
                                   elevation: 0,
-                                  backgroundColor: Colors.green,
+                                  backgroundColor: Colors.blueAccent,
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 12,
                                   ),

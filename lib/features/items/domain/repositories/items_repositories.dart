@@ -28,6 +28,13 @@ abstract class ItemsRepositories {
     required int quantity,
     required String remarks,
   });
+
+  Future<Either<Failure, Removal>> addRemoval({
+    required AuthToken token,
+    required int itemId,
+    required int quantity,
+    required String remarks,
+  });
 }
 
 class ItemRefillParams {

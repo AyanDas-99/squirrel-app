@@ -14,6 +14,8 @@ abstract class TagRemoteDatasource {
   Future<Tag> addTag(AuthToken token, String tag);
   Future<bool> removeTag(AuthToken token, int tagID);
   Future<List<Tag>> getAllTagsForItem(AuthToken token, int itemId);
+  Future<bool> addTagForItem(AuthToken token, int itemId, int tagId);
+  Future<bool> removeTagForItem(AuthToken token, int itemId, int tagId);
 }
 
 class TagRemoteDatasourceImpl implements TagRemoteDatasource {
@@ -140,13 +142,71 @@ class TagRemoteDatasourceImpl implements TagRemoteDatasource {
           (json.decode(result.body)['tags'] == null)
               ? []
               : (json.decode(result.body)['tags']).map<TagModel>((tag) {
-                return TagModel.fromJson(tag);
+                return TagModel(tag: (tag as String), id: 0);
               }).toList();
 
       return tags;
     } else if (result.statusCode == 500) {
       throw ServerException(message: json.decode(result.body)['error']);
     } else if (result.statusCode == 422) {
+      throw UserException(
+        message: json.decode(result.body)['error'].toString(),
+      );
+    } else {
+      throw UserException(
+        message: json.decode(result.body)['error'].toString(),
+      );
+    }
+  }
+
+  @override
+  Future<bool> addTagForItem(AuthToken token, int itemId, int tagId) async {
+    http.Response result;
+    try {
+      result = await client.post(
+        Uri.parse('$host/tags/item'),
+        headers: getHeader(token),
+        body: json.encode({"item_id": itemId, "tag_id": tagId}),
+      );
+    } catch (e) {
+      throw ServerException(message: e.toString());
+    }
+    dev.log(result.body.toString());
+
+    if (result.statusCode == 201) {
+      return true;
+    } else if (result.statusCode == 500) {
+      throw ServerException(message: json.decode(result.body)['error']);
+    } else if (result.statusCode == 422) {
+      throw UserException(
+        message: json.decode(result.body)['error'].toString(),
+      );
+    } else {
+      throw UserException(
+        message: json.decode(result.body)['error'].toString(),
+      );
+    }
+  }
+
+  @override
+  Future<bool> removeTagForItem(AuthToken token, int itemId, int tagId) async {
+    http.Response result;
+    try {
+      result = await client.delete(
+        Uri.parse('$host/tags/item'),
+        headers: getHeader(token),
+        body: json.encode({"item_id": itemId, "tag_id": tagId}),
+      );
+    } catch (e) {
+      throw ServerException(message: e.toString());
+    }
+    dev.log(result.body.toString());
+
+    if (result.statusCode == 200) {
+      return true;
+    } else if (result.statusCode == 500) {
+      throw ServerException(message: json.decode(result.body)['error']);
+    } else if (result.statusCode == 404) {
       throw UserException(
         message: json.decode(result.body)['error'].toString(),
       );

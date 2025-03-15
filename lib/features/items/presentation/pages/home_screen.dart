@@ -86,15 +86,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
-            IconButton(
-              icon: const Icon(Icons.people_outline),
-              onPressed: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => const UsersScreen()),
-                // );
-              },
-            ),
           ],
         ),
         body: Column(
@@ -281,32 +272,32 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.category_outlined),
-              label: 'Categories',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings_outlined),
-              label: 'Settings',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.people_outline),
-              label: 'Users',
-            ),
-          ],
-        ),
+        // bottomNavigationBar: BottomNavigationBar(
+        //   currentIndex: _currentIndex,
+        //   onTap: (index) {
+        //     setState(() {
+        //       _currentIndex = index;
+        //     });
+        //   },
+        //   items: const [
+        //     BottomNavigationBarItem(
+        //       icon: Icon(Icons.home_outlined),
+        //       label: 'Home',
+        //     ),
+        //     BottomNavigationBarItem(
+        //       icon: Icon(Icons.category_outlined),
+        //       label: 'Categories',
+        //     ),
+        //     BottomNavigationBarItem(
+        //       icon: Icon(Icons.settings_outlined),
+        //       label: 'Settings',
+        //     ),
+        //     BottomNavigationBarItem(
+        //       icon: Icon(Icons.people_outline),
+        //       label: 'Users',
+        //     ),
+        //   ],
+        // ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.of(context).push(
@@ -326,8 +317,7 @@ class ItemCard extends StatelessWidget {
   final Item item;
   final VoidCallback onTap;
 
-  const ItemCard({Key? key, required this.item, required this.onTap})
-    : super(key: key);
+  const ItemCard({super.key, required this.item, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

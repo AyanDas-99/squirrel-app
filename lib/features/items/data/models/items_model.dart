@@ -1,7 +1,7 @@
 import 'package:squirrel_app/features/items/domain/entities/item.dart';
 
 class ItemModel extends Item {
-  ItemModel({
+  const ItemModel({
     required super.id,
     required super.name,
     required super.quantity,

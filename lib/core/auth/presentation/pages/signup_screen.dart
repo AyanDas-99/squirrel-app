@@ -66,7 +66,6 @@ class _SignupScreenState extends State<SignupScreen> {
                 );
               },
               listener: (BuildContext context, UserState state) {
-                print(state.toString());
                 switch (state) {
                   case UserLoaded():
                     Navigator.of(context).pushAndRemoveUntil(

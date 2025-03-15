@@ -14,7 +14,7 @@ final class TagsForItemLoading extends TagsForItemState {}
 final class TagsForItemError extends TagsForItemState {
   final String message;
 
-  TagsForItemError({required this.message});
+  const TagsForItemError({required this.message});
 }
 
 final class TagsForItemLoaded extends TagsForItemState {

@@ -58,8 +58,43 @@ class TagRepositoryImpl implements TagRepository {
     int itemId,
   ) async {
     try {
-      final tags = await tagRemoteDatasource.getAllTagsForItem(authToken, itemId);
+      final tags = await tagRemoteDatasource.getAllTagsForItem(
+        authToken,
+        itemId,
+      );
       return Right(tags);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(properties: [e.message]));
+    } on UserException catch (e) {
+      return Left(UserFailure(properties: [e.message]));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> addTagForItem({
+    required AuthToken authToken,
+    required int itemId,
+    required int tagId,
+  }) async {
+    try {
+      final added = await tagRemoteDatasource.addTagForItem(
+        authToken,
+        itemId,
+        tagId,
+      );
+      return Right(added);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(properties: [e.message]));
+    } on UserException catch (e) {
+      return Left(UserFailure(properties: [e.message]));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, bool>> removeTagForItem({required AuthToken authToken, required int itemId, required int tagId}) async{
+    try {
+      final isRemoved = await tagRemoteDatasource.removeTagForItem(authToken, itemId, tagId);
+      return Right(isRemoved);
     } on ServerException catch (e) {
       return Left(ServerFailure(properties: [e.message]));
     } on UserException catch (e) {

@@ -9,7 +9,7 @@ class Item extends Equatable {
   final DateTime createdAt;
   final int version;
 
-  Item({
+  const Item({
     required this.id,
     required this.name,
     required this.quantity,

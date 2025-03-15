@@ -15,11 +15,13 @@ import 'package:squirrel_app/features/items/data/datasources/items_remote_dataso
 import 'package:squirrel_app/features/items/data/respositories/item_repository_impl.dart';
 import 'package:squirrel_app/features/items/domain/repositories/items_repositories.dart';
 import 'package:squirrel_app/features/items/domain/usecases/add_item.dart';
+import 'package:squirrel_app/features/items/domain/usecases/add_removals.dart';
 import 'package:squirrel_app/features/items/domain/usecases/get_all_items.dart';
 import 'package:squirrel_app/features/items/domain/usecases/get_item_by_id.dart';
 import 'package:squirrel_app/features/items/domain/usecases/refill_item.dart';
 import 'package:squirrel_app/features/items/domain/usecases/remove_item.dart';
 import 'package:squirrel_app/features/items/presentation/bloc/add_item_bloc.dart';
+import 'package:squirrel_app/features/items/presentation/bloc/add_removal_bloc.dart';
 import 'package:squirrel_app/features/items/presentation/bloc/item_bloc.dart';
 import 'package:squirrel_app/features/items/presentation/bloc/item_by_id_bloc.dart';
 import 'package:squirrel_app/features/items/presentation/bloc/item_refill_bloc.dart';
@@ -28,9 +30,13 @@ import 'package:squirrel_app/features/tags/data/datastores/tag_remote_datasource
 import 'package:squirrel_app/features/tags/data/repositories/tag_repository_impl.dart';
 import 'package:squirrel_app/features/tags/domain/repositories/tag_repository.dart';
 import 'package:squirrel_app/features/tags/domain/usecases/add_tag.dart';
+import 'package:squirrel_app/features/tags/domain/usecases/add_tag_for_item.dart';
 import 'package:squirrel_app/features/tags/domain/usecases/get_all_tags.dart';
 import 'package:squirrel_app/features/tags/domain/usecases/get_all_tags_for_item.dart';
 import 'package:squirrel_app/features/tags/domain/usecases/remove_tag.dart';
+import 'package:squirrel_app/features/tags/domain/usecases/remove_tag_for_item.dart';
+import 'package:squirrel_app/features/tags/presentation/bloc/add_tag_for_item_bloc.dart';
+import 'package:squirrel_app/features/tags/presentation/bloc/remove_tag_for_item_bloc.dart';
 import 'package:squirrel_app/features/tags/presentation/bloc/tags_bloc.dart';
 import 'package:squirrel_app/features/tags/presentation/bloc/tags_for_item_bloc.dart';
 import 'package:squirrel_app/features/transactions/data/datasources/transactions_remote_datasource.dart';
@@ -40,6 +46,15 @@ import 'package:squirrel_app/features/transactions/domain/usecases/get_all_trans
 import 'package:squirrel_app/features/transactions/domain/usecases/issue_item.dart';
 import 'package:squirrel_app/features/transactions/presentation/bloc/issue_item_bloc.dart';
 import 'package:squirrel_app/features/transactions/presentation/bloc/transaction_bloc.dart';
+import 'package:squirrel_app/features/users/data/datasources/users_datasource.dart';
+import 'package:squirrel_app/features/users/data/repositories/users_repository_impl.dart';
+import 'package:squirrel_app/features/users/domain/repositories/users_repository.dart';
+import 'package:squirrel_app/features/users/domain/usecases/get_all_users.dart';
+import 'package:squirrel_app/features/users/domain/usecases/get_permissions_for_user.dart';
+import 'package:squirrel_app/features/users/domain/usecases/update_permission.dart';
+import 'package:squirrel_app/features/users/presentation/bloc/all_users_bloc.dart';
+import 'package:squirrel_app/features/users/presentation/bloc/update_permission_bloc.dart';
+import 'package:squirrel_app/features/users/presentation/bloc/user_permissions_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -65,28 +80,22 @@ Future<void> init() async {
     () => TransactionBloc(getAllTransactions: sl()),
   );
 
-  sl.registerFactory<AddItemBloc>(
-    () => AddItemBloc(addItem: sl()),
-  );
-  
-  sl.registerFactory<RemoveItemBloc>(
-    () => RemoveItemBloc(removeItem: sl()),
-  );
+  sl.registerFactory<AddItemBloc>(() => AddItemBloc(addItem: sl()));
 
+  sl.registerFactory<RemoveItemBloc>(() => RemoveItemBloc(removeItem: sl()));
 
-  sl.registerFactory<ItemByIdBloc>(
-    () => ItemByIdBloc(getItemById: sl()),
-  );
+  sl.registerFactory<ItemByIdBloc>(() => ItemByIdBloc(getItemById: sl()));
 
+  sl.registerFactory<ItemRefillBloc>(() => ItemRefillBloc(refillItem: sl()));
 
-  sl.registerFactory<ItemRefillBloc>(
-    () => ItemRefillBloc(refillItem: sl()),
-  );
+  sl.registerFactory<IssueItemBloc>(() => IssueItemBloc(issueItem: sl()));
 
-
-  sl.registerFactory<IssueItemBloc>(
-    () => IssueItemBloc(issueItem: sl()),
-  );
+  sl.registerFactory<AllUsersBloc>(() => AllUsersBloc(sl()));
+  sl.registerFactory<UpdatePermissionBloc>(() => UpdatePermissionBloc(sl()));
+  sl.registerFactory<UserPermissionsBloc>(() => UserPermissionsBloc(sl()));
+  sl.registerFactory<AddTagForItemBloc>(() => AddTagForItemBloc(addTagForItem: sl()));
+  sl.registerFactory<AddRemovalBloc>(() => AddRemovalBloc(addRemoval: sl()));
+  sl.registerFactory<RemoveTagForItemBloc>(() => RemoveTagForItemBloc(removeTagForItem: sl()));
 
   // Usecases
   sl.registerLazySingleton(() => Signup(sl()));
@@ -105,6 +114,12 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetItemById(sl()));
   sl.registerLazySingleton(() => RefillItem(itemsRepositories: sl()));
   sl.registerLazySingleton(() => IssueItem(repository: sl()));
+  sl.registerLazySingleton(() => GetAllUsers(sl()));
+  sl.registerLazySingleton(() => UpdatePermission(sl()));
+  sl.registerLazySingleton(() => GetPermissionsForUser(sl()));
+  sl.registerLazySingleton(() => AddTagForItem(repository: sl()));
+  sl.registerLazySingleton(() => AddRemoval(sl()));
+  sl.registerLazySingleton(() => RemoveTagForItem(repository: sl()));
 
   // Repositories
   sl.registerLazySingleton<UserRepository>(
@@ -121,6 +136,10 @@ Future<void> init() async {
 
   sl.registerLazySingleton<TransactionRepository>(
     () => TransactionRepositoryImpl(transactionRemoteDatasource: sl()),
+  );
+
+  sl.registerLazySingleton<UsersRepository>(
+    () => UsersRepositoryImpl(usersDatasource: sl()),
   );
 
   // Data sources
@@ -142,6 +161,10 @@ Future<void> init() async {
 
   sl.registerLazySingleton<TransactionsRemoteDatasource>(
     () => TransactionRemoteDatasourceImpl(client: sl()),
+  );
+
+  sl.registerLazySingleton<UsersDatasource>(
+    () => UsersDatasourceImpl(client: sl()),
   );
 
   // External
