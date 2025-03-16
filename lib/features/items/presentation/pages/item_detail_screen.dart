@@ -92,15 +92,15 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                     children: [
                       // Item Info Section
                       Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16, top: 5),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (state.item.remarks.isNotEmpty)
+                            if (state.item.remarks.isNotEmpty) ...[
                               Text(state.item.remarks),
-                            const SizedBox(height: 12),
+                              const SizedBox(height: 12),
+                            ],
                             ItemTagsList(),
-                            const SizedBox(height: 16),
                             Row(
                               children: [
                                 Expanded(

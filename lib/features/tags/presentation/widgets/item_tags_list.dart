@@ -17,22 +17,25 @@ class ItemTagsList extends StatelessWidget {
           TagsForItemLoaded() =>
             (state.tags.isEmpty)
                 ? Container()
-                : Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children:
-                      state.tags.map((tag) {
-                        return ShadBadge(
-                          backgroundColor: Colors.blueGrey.shade100,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          foregroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          child: Text(tag.tag),
-                        );
-                      }).toList(),
+                : Padding(
+                  padding: const EdgeInsets.only(bottom:16.0),
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children:
+                        state.tags.map((tag) {
+                          return ShadBadge(
+                            backgroundColor: Colors.blueGrey.shade100,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            foregroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            child: Text(tag.tag),
+                          );
+                        }).toList(),
+                  ),
                 ),
         };
       },
