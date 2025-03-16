@@ -4,6 +4,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:squirrel_app/core/auth/data/models/auth_token_model.dart';
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/core/tokenParam.dart';
+import 'package:squirrel_app/core/widgets/loading_image.dart';
 import 'package:squirrel_app/core/widgets/logo_image.dart';
 import 'package:squirrel_app/features/items/domain/entities/item.dart';
 import 'package:squirrel_app/features/items/domain/repositories/items_repositories.dart';
@@ -72,6 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
+          scrolledUnderElevation: 0,
           title: Row(
             children: [
               LogoImage(width: 35),
@@ -186,12 +188,6 @@ class _HomeScreenState extends State<HomeScreen> {
               child: BlocConsumer<ItemBloc, ItemState>(
                 builder: (context, state) {
                   return switch (state) {
-                    ItemsInitial() => const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                    ItemsLoading() => const Center(
-                      child: CircularProgressIndicator(),
-                    ),
                     ItemsError() => Center(child: Text(state.message)),
                     ItemsLoaded() => Column(
                       children: [
@@ -233,7 +229,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           context,
                                                         ) => ItemDetailScreen(
                                                           itemId: item.id,
-                                                          token: widget.authToken,
+                                                          token:
+                                                              widget.authToken,
                                                         ),
                                                   ),
                                                 );
@@ -277,6 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                       ],
                     ),
+                    _ => Center(child: LoadingImage()),
                   };
                 },
                 listener: (BuildContext context, ItemState state) {
@@ -292,10 +290,9 @@ class _HomeScreenState extends State<HomeScreen> {
             BoxShadow(color: Colors.grey, blurRadius: 2, offset: Offset(1, 1)),
           ],
           onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => AddItemScreen(token: widget.authToken),
-              ),
+            showShadDialog(
+              context: context,
+              builder: (context) => AddItemScreen(token: widget.authToken),
             );
           },
           child: const Icon(Icons.add),

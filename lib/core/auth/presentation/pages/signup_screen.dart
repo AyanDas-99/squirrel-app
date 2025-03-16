@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:squirrel_app/core/utils/show_toaster.dart';
 import 'package:squirrel_app/core/widgets/logo_image.dart';
 import 'package:squirrel_app/core/auth/presentation/bloc/user_bloc.dart';
 import 'package:squirrel_app/core/auth/presentation/pages/login_screen.dart';
@@ -194,10 +196,9 @@ class _SignupScreenState extends State<SignupScreen> {
                   listener: (BuildContext context, UserState state) {
                     switch (state) {
                       case UserLoaded():
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("User Created!\nPlease Login"),
-                          ),
+                        showToast(
+                          context: context,
+                          desc: "User Created!\nPlease Login",
                         );
                         Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(
@@ -206,9 +207,11 @@ class _SignupScreenState extends State<SignupScreen> {
                           (route) => false,
                         );
                       case SignupError():
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text(state.message)));
+                        showToast(
+                          context: context,
+                          desc: state.message,
+                          isDestructive: true,
+                        );
                       default:
                     }
                   },

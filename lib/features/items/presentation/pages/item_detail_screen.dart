@@ -66,12 +66,23 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
             ),
             ItemByIdLoaded() => Scaffold(
               appBar: AppBar(
-                title: const Text('Item Details'),
+                title: Row(
+                  children: [
+                    Text(state.item.name),
+                    const SizedBox(width: 10),
+                    ShadBadge(
+                      child: Text(
+                        '${state.item.remaining}',
+                        style: const TextStyle(fontSize: 15),
+                      ),
+                    ),
+                  ],
+                ),
                 leading: IconButton(
                   icon: const Icon(Icons.arrow_back),
                   onPressed: () => Navigator.pop(context),
                 ),
-                actions: [ItemMenu(token: widget.token, itemId: widget.itemId)],
+                actions: [ItemMenu(token: widget.token, item: state.item)],
               ),
               body: Stack(
                 children: [
@@ -85,28 +96,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              children: [
-                                Text(
-                                  state.item.name,
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                Spacer(),
-                                ShadBadge(
-                                  child: Text(
-                                    '${state.item.remaining}',
-                                    style: const TextStyle(fontSize: 15),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            if (state.item.remarks.isNotEmpty) ...[
-                              const SizedBox(height: 10),
+                            if (state.item.remarks.isNotEmpty)
                               Text(state.item.remarks),
-                            ],
                             const SizedBox(height: 12),
                             ItemTagsList(),
                             const SizedBox(height: 16),
@@ -117,14 +108,20 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                     leading: Icon(Icons.add),
                                     child: Text("Add Stock"),
                                     onPressed: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder:
-                                              (context) => AddStockPage(
-                                                item: state.item,
-                                                token: widget.token,
-                                              ),
-                                        ),
+                                      showShadDialog(
+                                        animateIn: const [
+                                          FadeEffect(
+                                            duration: Duration(
+                                              milliseconds: 100,
+                                            ),
+                                          ),
+                                        ],
+                                        context: context,
+                                        builder:
+                                            (context) => AddStockPage(
+                                              item: state.item,
+                                              token: widget.token,
+                                            ),
                                       );
                                     },
                                   ),
@@ -133,14 +130,20 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                 Expanded(
                                   child: ShadButton(
                                     onPressed: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder:
-                                              (context) => IssueItemScreen(
-                                                itemId: widget.itemId,
-                                                token: widget.token,
-                                              ),
-                                        ),
+                                      showShadDialog(
+                                        animateIn: const [
+                                          FadeEffect(
+                                            duration: Duration(
+                                              milliseconds: 100,
+                                            ),
+                                          ),
+                                        ],
+                                        context: context,
+                                        builder:
+                                            (context) => IssueItemScreen(
+                                              item: state.item,
+                                              token: widget.token,
+                                            ),
                                       );
                                     },
                                     leading: const Icon(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:squirrel_app/core/auth/presentation/bloc/user_bloc.dart';
 import 'package:squirrel_app/core/auth/presentation/pages/signup_screen.dart';
+import 'package:squirrel_app/core/utils/show_toaster.dart';
 import 'package:squirrel_app/core/widgets/logo_image.dart';
 import 'package:squirrel_app/features/items/presentation/pages/home_screen.dart';
 
@@ -177,15 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   listener: (BuildContext context, UserState state) {
                     if (state is LoginError) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            state.message,
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
+                      showToast(context: context, desc: state.message, isDestructive: true);
                     }
                     if (state is LoggedIn) {
                       Navigator.of(context).pushAndRemoveUntil(

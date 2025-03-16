@@ -5,6 +5,7 @@ import 'package:squirrel_app/core/auth/data/models/auth_token_model.dart';
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/core/tokenParam.dart';
 import 'package:squirrel_app/core/widgets/confirm_dialog.dart';
+import 'package:squirrel_app/features/items/domain/entities/item.dart';
 import 'package:squirrel_app/features/items/domain/repositories/items_repositories.dart';
 import 'package:squirrel_app/features/items/presentation/bloc/item_bloc.dart';
 import 'package:squirrel_app/features/items/presentation/bloc/remove_item_bloc.dart';
@@ -13,8 +14,8 @@ import 'package:squirrel_app/features/items/presentation/widgets/manage_item_tag
 
 class ItemMenu extends StatefulWidget {
   final AuthToken token;
-  final int itemId;
-  const ItemMenu({super.key, required this.token, required this.itemId});
+  final Item item;
+  const ItemMenu({super.key, required this.token, required this.item});
 
   @override
   State<ItemMenu> createState() => _ItemMenuState();
@@ -33,7 +34,7 @@ class _ItemMenuState extends State<ItemMenu> {
       builder: (BuildContext context) {
         return ManageItemTagsBottomSheet(
           token: widget.token,
-          itemId: widget.itemId,
+          itemId: widget.item.id,
         );
       },
     );
@@ -49,13 +50,13 @@ class _ItemMenuState extends State<ItemMenu> {
       builder:
           (context) => ConfirmDialog(
             title: "Do you want to permanently delete item?",
-            description: "This step cannot be reversed\nID:${widget.itemId}",
+            description: "This step cannot be reversed\nID:${widget.item.id}",
           ),
     );
 
     if (canRemove == true && mounted) {
       context.read<RemoveItemBloc>().add(
-        EventRemoveItem(token: widget.token, itemId: widget.itemId),
+        EventRemoveItem(token: widget.token, itemId: widget.item.id),
       );
 
       context.read<ItemBloc>().add(
@@ -127,15 +128,16 @@ class _ItemMenuState extends State<ItemMenu> {
               ),
               onTap:
                   () => {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => RemoveStockPage(
-                              itemId: widget.itemId,
-                              token: widget.token,
-                            ),
-                      ),
+                    showShadDialog(
+                      animateIn: const [
+                        FadeEffect(duration: Duration(milliseconds: 100)),
+                      ],
+                      context: context,
+                      builder:
+                          (context) => RemoveStockPage(
+                            item: widget.item,
+                            token: widget.token,
+                          ),
                     ),
                   },
             ),

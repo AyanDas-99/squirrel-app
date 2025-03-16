@@ -32,8 +32,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ('Tags', TagsSection(authToken: widget.authToken)),
       if ((context.read<UserBloc>().state as LoggedIn).user.isAdmin)
         ('Users', AdminUserManagementScreen(token: widget.authToken)),
-      ('Notifications', Container()),
-      ('Appearance', Container()),
     ];
   }
 

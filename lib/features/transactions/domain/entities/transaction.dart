@@ -17,7 +17,7 @@ class Transaction {
 
   List<Event> getSortedList() {
     final List<Event> list = [...additions, ...removals, ...issues];
-    list.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    list.sort((a, b) => b.timestamp.compareTo(a.timestamp));
     return list;
   }
 }
