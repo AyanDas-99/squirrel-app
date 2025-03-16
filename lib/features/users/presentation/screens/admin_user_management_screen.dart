@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/core/auth/domain/entities/user.dart';
 import 'package:squirrel_app/dependency_injection.dart';
@@ -49,37 +50,25 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
       );
     }
 
-    return ListView.builder(
-      padding: EdgeInsets.all(16),
-      itemCount: users.length,
-      // separatorBuilder: (context, index) => Divider(),
-      itemBuilder: (context, index) {
-        final user = users[index];
-        return BlocProvider(
-          create:
-              (context) =>
-                  sl<UserPermissionsBloc>()..add(
-                    EventGetUserPermissions(
-                      token: widget.token,
-                      userId: user.id,
-                    ),
-                  ),
-          child: UserCard(
-            user: user,
-            token: widget.token,
-            isOpen: openIndex == index,
-            switchVisibility: () {
-              setState(() {
-                if (openIndex == index) {
-                  openIndex = -1;
-                } else {
-                  openIndex = index;
-                }
-              });
-            },
-          ),
-        );
-      },
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20.0),
+      child: SingleChildScrollView(
+        child: ShadAccordion<int>(
+          children: users.map((user) {
+            return BlocProvider(
+              create:
+                  (context) =>
+                      sl<UserPermissionsBloc>()..add(
+                        EventGetUserPermissions(
+                          token: widget.token,
+                          userId: user.id,
+                        ),
+                      ),
+              child: UserCard(user: user, token: widget.token),
+            );
+          }),
+        ),
+      ),
     );
   }
 }

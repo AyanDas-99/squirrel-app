@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/features/items/presentation/bloc/item_by_id_bloc.dart';
 import 'package:squirrel_app/features/items/presentation/pages/add_stock_page.dart';
@@ -72,124 +73,112 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                 ),
                 actions: [ItemMenu(token: widget.token, itemId: widget.itemId)],
               ),
-              body: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              body: Stack(
                 children: [
-                  // Item Info Section
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+                  ListView(),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Item Info Section
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              state.item.name,
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w500,
-                              ),
+                            Row(
+                              children: [
+                                Text(
+                                  state.item.name,
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                Spacer(),
+                                ShadBadge(
+                                  child: Text(
+                                    '${state.item.remaining}',
+                                    style: const TextStyle(fontSize: 15),
+                                  ),
+                                ),
+                              ],
                             ),
-                            Spacer(),
-                            Text(
-                              'Current Stock: ${state.item.remaining}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                              ),
+                            if (state.item.remarks.isNotEmpty) ...[
+                              const SizedBox(height: 10),
+                              Text(state.item.remarks),
+                            ],
+                            const SizedBox(height: 12),
+                            ItemTagsList(),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: ShadButton(
+                                    leading: Icon(Icons.add),
+                                    child: Text("Add Stock"),
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => AddStockPage(
+                                                item: state.item,
+                                                token: widget.token,
+                                              ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: ShadButton(
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => IssueItemScreen(
+                                                itemId: widget.itemId,
+                                                token: widget.token,
+                                              ),
+                                        ),
+                                      );
+                                    },
+                                    leading: const Icon(
+                                      Icons.arrow_downward,
+                                      color: Colors.white,
+                                    ),
+                                    child: const Text(
+                                      'Issue Item',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                        if (state.item.remarks.isNotEmpty) ...[
-                          const SizedBox(height: 10),
-                          Text(
-                            state.item.remarks,
-                            style: TextStyle(color: Colors.grey[600]),
-                          ),
-                        ],
-                        const SizedBox(height: 12),
-                        ItemTagsList(),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder:
-                                          (context) => AddStockPage(
-                                            item: state.item,
-                                            token: widget.token,
-                                          ),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(Icons.add, color: Colors.white),
-                                label: const Text('Add Stock', style: TextStyle(color: Colors.white),),
-                                style: ElevatedButton.styleFrom(
-                                  elevation: 0,
-                                  backgroundColor: Colors.green,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder:
-                                          (context) => IssueItemScreen(
-                                            itemId: widget.itemId,
-                                            token: widget.token,
-                                          ),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(
-                                  Icons.arrow_downward,
-                                  color: Colors.white,
-                                ),
-                                label: const Text(
-                                  'Issue Item',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  elevation: 0,
-                                  backgroundColor: Colors.blueAccent,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Transactions Section
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                    child: const Text(
-                      'Transactions',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
                       ),
-                    ),
-                  ),
 
-                  // Tab Bar
-                  Expanded(
-                    child: TransactionTab(
-                      authToken: widget.token,
-                      itemId: widget.itemId,
-                    ),
+                      // Transactions Section
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                        child: const Text(
+                          'Transactions',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+
+                      // Tab Bar
+                      Expanded(
+                        child: TransactionTab(
+                          authToken: widget.token,
+                          itemId: widget.itemId,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

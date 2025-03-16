@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:squirrel_app/core/auth/data/models/auth_token_model.dart';
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/core/tokenParam.dart';
+import 'package:squirrel_app/core/widgets/confirm_dialog.dart';
 import 'package:squirrel_app/features/tags/presentation/bloc/tags_bloc.dart';
 
 class TagsSection extends StatefulWidget {
@@ -22,36 +24,62 @@ class _TagsSectionState extends State<TagsSection> {
     super.dispose();
   }
 
-  void _removeTag(int tagId) {
+  void _removeTag(int tagId) async {
     if (tagId != 0) {
-      context.read<TagsBloc>().add(
-        RemoveTagEvent(
-          tokenTagId: Tokenparam(
-            token: AuthTokenModel(
-              token: widget.authToken.token,
-              expiry: widget.authToken.expiry,
+      final canRemove = await showShadDialog(
+        animateIn: [FadeEffect(duration: const Duration(milliseconds: 100))],
+        context: context,
+        builder:
+            (BuildContext context) => ConfirmDialog(
+              title: "Do you want to permanently remove tag?",
+              description:
+                  "This step cannot be revoked.",
             ),
-            param: tagId,
-          ),
-        ),
       );
+
+      if (canRemove == true && mounted) {
+        context.read<TagsBloc>().add(
+          RemoveTagEvent(
+            tokenTagId: Tokenparam(
+              token: AuthTokenModel(
+                token: widget.authToken.token,
+                expiry: widget.authToken.expiry,
+              ),
+              param: tagId,
+            ),
+          ),
+        );
+      }
     }
   }
 
-  void _addTag() {
+  void _addTag() async {
     if (_newTagController.text.trim().isNotEmpty) {
-      context.read<TagsBloc>().add(
-        AddTagEvent(
-          tokenTag: Tokenparam(
-            token: AuthTokenModel(
-              token: widget.authToken.token,
-              expiry: widget.authToken.expiry,
+      final adding = await showShadDialog(
+        animateIn: [FadeEffect(duration: const Duration(milliseconds: 100))],
+        context: context,
+        builder:
+            (BuildContext context) => ConfirmDialog(
+              title: "Do you want to add tag?",
+              description:
+                  "Do you want to add tag '${_newTagController.text.trim()}'?",
             ),
-            param: _newTagController.text.trim(),
-          ),
-        ),
       );
-      _newTagController.clear();
+      if (adding == true && mounted) {
+        context.read<TagsBloc>().add(
+          AddTagEvent(
+            tokenTag: Tokenparam(
+              token: AuthTokenModel(
+                token: widget.authToken.token,
+                expiry: widget.authToken.expiry,
+              ),
+              param: _newTagController.text.trim(),
+            ),
+          ),
+        );
+
+        _newTagController.clear();
+      }
     }
   }
 
@@ -73,32 +101,16 @@ class _TagsSectionState extends State<TagsSection> {
               Row(
                 children: [
                   Expanded(
-                    child: TextField(
+                    child: ShadInput(
                       controller: _newTagController,
-                      decoration: InputDecoration(
-                        hintText: 'Enter tag name...',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                      ),
+                      placeholder: Text("Tag name"),
                     ),
                   ),
                   const SizedBox(width: 12),
-                  ElevatedButton(
+                  ShadButton(
+                    autofocus: false,
                     onPressed: _addTag,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 14,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                    leading: Icon(Icons.add),
                     child: const Text('Add'),
                   ),
                 ],
@@ -135,28 +147,23 @@ class _TagsSectionState extends State<TagsSection> {
                   itemCount: state.tags.length,
                   itemBuilder: (context, index) {
                     final tag = state.tags[index];
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              tag.tag,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            IconButton(
-                              icon: const Icon(Icons.delete_outline),
-                              color: Colors.red[400],
-                              onPressed: () {
-                                _removeTag(tag.id);
-                              },
-                            ),
-                          ],
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: ShadCard(
+                        height: 70,
+                        trailing: IconButton(
+                          padding: EdgeInsets.all(0),
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.red,
+                          ),
+                          onPressed: () {
+                            _removeTag(tag.id);
+                          },
+                        ),
+                        title: Text(
+                          tag.tag,
+                          style: const TextStyle(fontSize: 15),
                         ),
                       ),
                     );

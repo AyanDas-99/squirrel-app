@@ -19,6 +19,7 @@ import 'package:squirrel_app/features/users/presentation/bloc/update_permission_
 import 'package:squirrel_app/features/users/presentation/bloc/user_permissions_bloc.dart';
 import 'package:squirrel_app/screen_controller.dart';
 import 'dependency_injection.dart' as di;
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,28 +50,29 @@ class SquirrelApp extends StatelessWidget {
         BlocProvider(create: (context) => sl<AddRemovalBloc>()),
         BlocProvider(create: (context) => sl<RemoveTagForItemBloc>()),
       ],
-      child: MaterialApp(
+      child: ShadApp.material(
         debugShowCheckedModeBanner: false,
         title: 'Squirrel',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black,
-            elevation: 0,
-          ),
-          scaffoldBackgroundColor: Colors.white,
-          cardTheme: CardTheme(
-            elevation: 1,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+        materialThemeBuilder:
+            (context, theme) => ThemeData(
+              primarySwatch: Colors.blue,
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                elevation: 0,
+              ),
+              scaffoldBackgroundColor: Colors.white,
+              cardTheme: CardTheme(
+                elevation: 1,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+                selectedItemColor: Colors.blue,
+                unselectedItemColor: Colors.grey,
+              ),
             ),
-          ),
-          bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-            selectedItemColor: Colors.blue,
-            unselectedItemColor: Colors.grey,
-          ),
-        ),
         home: ScreenController(),
       ),
     );

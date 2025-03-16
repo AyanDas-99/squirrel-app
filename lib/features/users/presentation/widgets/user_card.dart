@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/core/auth/domain/entities/user.dart';
 import 'package:squirrel_app/features/users/domain/usecases/update_permission.dart';
@@ -9,15 +10,7 @@ import 'package:squirrel_app/features/users/presentation/bloc/user_permissions_b
 class UserCard extends StatefulWidget {
   final User user;
   final AuthToken token;
-  final bool isOpen;
-  final VoidCallback switchVisibility;
-  const UserCard({
-    super.key,
-    required this.user,
-    required this.token,
-    required this.isOpen,
-    required this.switchVisibility,
-  });
+  const UserCard({super.key, required this.user, required this.token});
 
   @override
   State<UserCard> createState() => _UserCardState();
@@ -50,121 +43,107 @@ class _UserCardState extends State<UserCard> {
           );
         }
       },
-      child: Card(
-        margin: const EdgeInsets.only(bottom: 12),
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Column(
+      child: Container(
+        margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10, top: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.shade400,
+              blurRadius: 1,
+              spreadRadius: 0,
+            ),
+          ],
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: ShadAccordionItem(
+          value: widget.user.id,
+          underlineTitleOnHover: false,
+          separator: Container(),
+          title: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+              // User avatar
+              Icon(Icons.person_outline_sharp),
+              SizedBox(width: 30),
+              // User details
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // User avatar
-                  CircleAvatar(radius: 15, child: Icon(Icons.person)),
-                  SizedBox(width: 25),
-                  // User details
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.user.username,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          "ID: ${widget.user.id}",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-
-                      ],
-                    ),
+                  Text(
+                    widget.user.username,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      widget.switchVisibility();
-                    },
-                    icon:
-                        widget.isOpen
-                            ? Icon(Icons.arrow_drop_up_sharp)
-                            : Icon(Icons.arrow_drop_down_sharp),
+                  SizedBox(height: 4),
+                  Text(
+                    "ID: ${widget.user.id}",
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   ),
                 ],
               ),
-              if (widget.isOpen)
-                BlocConsumer<UserPermissionsBloc, UserPermissionsState>(
-                  listener: (context, state) {
-                    // TODO: implement listener
-                  },
-                  builder: (context, state) {
-                    return switch (state) {
-                      UserPermissionsError() => Center(
-                        child: Text(state.message),
-                      ),
-                      UserPermissionsLoaded() => Row(
+            ],
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(16),
+            child: BlocConsumer<UserPermissionsBloc, UserPermissionsState>(
+              listener: (context, state) {
+                // TODO: implement listener
+              },
+              builder: (context, state) {
+                return switch (state) {
+                  UserPermissionsError() => Center(child: Text(state.message)),
+                  UserPermissionsLoaded() => Column(
+                    children: [
+                      // Read Permission Switch
+                      Row(
                         children: [
-                          // Read Permission Switch
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Text('Read'),
-                                SizedBox(width: 8),
-                                Switch(
-                                  value: state.permissions.contains(1),
-                                  onChanged: (value) {
-                                    _updatePermission(1, value);
-                                  },
-                                  activeColor: Colors.green,
-                                ),
-                              ],
-                            ),
-                          ),
-                          // Issue Permission Switch
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Text('Issue'),
-                                SizedBox(width: 8),
-                                Switch(
-                                  value: state.permissions.contains(2),
-                                  onChanged: (value) {
-                                    _updatePermission(2, value);
-                                  },
-                                  activeColor: Colors.blue,
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // Write Permission Switch
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Text('Write'),
-                                SizedBox(width: 8),
-                                Switch(
-                                  value: state.permissions.contains(3),
-                                  onChanged: (value) {
-                                    _updatePermission(3, value);
-                                  },
-                                  activeColor: Colors.red,
-                                ),
-                              ],
-                            ),
+                          Text('Read'),
+                          SizedBox(width: 8),
+                          Switch(
+                            value: state.permissions.contains(1),
+                            onChanged: (value) {
+                              _updatePermission(1, value);
+                            },
+                            activeColor: Colors.green,
                           ),
                         ],
                       ),
-                      _ => Center(child: CircularProgressIndicator()),
-                    };
-                  },
-                ),
-            ],
+                      // Issue Permission Switch
+                      Row(
+                        children: [
+                          Text('Issue'),
+                          SizedBox(width: 8),
+                          Switch(
+                            value: state.permissions.contains(2),
+                            onChanged: (value) {
+                              _updatePermission(2, value);
+                            },
+                            activeColor: Colors.blue,
+                          ),
+                        ],
+                      ),
+
+                      // Write Permission Switch
+                      Row(
+                        children: [
+                          Text('Write'),
+                          SizedBox(width: 8),
+                          Switch(
+                            value: state.permissions.contains(3),
+                            onChanged: (value) {
+                              _updatePermission(3, value);
+                            },
+                            activeColor: Colors.red,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  _ => Center(child: CircularProgressIndicator()),
+                };
+              },
+            ),
           ),
         ),
       ),

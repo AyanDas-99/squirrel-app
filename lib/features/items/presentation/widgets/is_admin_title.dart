@@ -7,6 +7,18 @@ class IsAdminText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<UserBloc, UserState>(builder:(context, state) => (state is LoggedIn && state.user.isAdmin) ? Text("Squirrel Admin") : Text("Squirrel"));
+    return BlocBuilder<UserBloc, UserState>(
+      builder:
+          (context, state) =>
+              (state is LoggedIn && state.user.isAdmin)
+                  ? Text(
+                    "Admin",
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                  : Container(),
+    );
   }
 }

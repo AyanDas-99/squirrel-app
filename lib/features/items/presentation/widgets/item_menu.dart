@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:squirrel_app/core/auth/data/models/auth_token_model.dart';
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/core/tokenParam.dart';
+import 'package:squirrel_app/core/widgets/confirm_dialog.dart';
 import 'package:squirrel_app/features/items/domain/repositories/items_repositories.dart';
 import 'package:squirrel_app/features/items/presentation/bloc/item_bloc.dart';
 import 'package:squirrel_app/features/items/presentation/bloc/remove_item_bloc.dart';
@@ -19,10 +21,12 @@ class ItemMenu extends StatefulWidget {
 }
 
 class _ItemMenuState extends State<ItemMenu> {
+  // Show bottom modal view to manage tags
   void showTagModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -35,14 +39,52 @@ class _ItemMenuState extends State<ItemMenu> {
     );
   }
 
+  // Remove item after confirmation
+  // and reload items
+  // and try to pop back
+  void _removeItem() async {
+    final canRemove = await showShadDialog(
+      animateIn: [FadeEffect(duration: const Duration(milliseconds: 100))],
+      context: context,
+      builder:
+          (context) => ConfirmDialog(
+            title: "Do you want to permanently delete item?",
+            description: "This step cannot be reversed\nID:${widget.itemId}",
+          ),
+    );
+
+    if (canRemove == true && mounted) {
+      context.read<RemoveItemBloc>().add(
+        EventRemoveItem(token: widget.token, itemId: widget.itemId),
+      );
+
+      context.read<ItemBloc>().add(
+        GetItems(
+          tokenparam: Tokenparam(
+            token: AuthTokenModel(
+              token: widget.token.token,
+              expiry: widget.token.expiry,
+            ),
+            param: ItemsFilter(page: 1),
+          ),
+        ),
+      );
+      Navigator.of(context).maybePop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return TextButton(
+    return IconButton(
       onPressed: () {
         final RenderBox button = context.findRenderObject() as RenderBox;
         final Offset offset = button.localToGlobal(Offset.zero);
 
         showMenu(
+          popUpAnimationStyle: AnimationStyle(
+            duration: const Duration(milliseconds: 100),
+          ),
+          color: Colors.white,
           context: context,
           position: RelativeRect.fromLTRB(
             offset.dx,
@@ -50,7 +92,8 @@ class _ItemMenuState extends State<ItemMenu> {
             offset.dx,
             offset.dy,
           ),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+          menuPadding: const EdgeInsets.all(15),
           items: [
             PopupMenuItem(
               child: Row(
@@ -60,28 +103,7 @@ class _ItemMenuState extends State<ItemMenu> {
                   Icon(Icons.delete_forever, color: Colors.red),
                 ],
               ),
-              onTap:
-                  () => {
-                    context.read<RemoveItemBloc>().add(
-                      EventRemoveItem(
-                        token: widget.token,
-                        itemId: widget.itemId,
-                      ),
-                    ),
-
-                    context.read<ItemBloc>().add(
-                      GetItems(
-                        tokenparam: Tokenparam(
-                          token: AuthTokenModel(
-                            token: widget.token.token,
-                            expiry: widget.token.expiry,
-                          ),
-                          param: ItemsFilter(page: 1),
-                        ),
-                      ),
-                    ),
-                    Navigator.of(context).maybePop(),
-                  },
+              onTap: _removeItem,
             ),
 
             PopupMenuItem(
@@ -100,7 +122,7 @@ class _ItemMenuState extends State<ItemMenu> {
                 children: [
                   Text('Remove Stock', style: TextStyle(fontSize: 16)),
                   Spacer(),
-                  Icon(Icons.delete, color: Colors.red),
+                  Icon(Icons.remove, color: Colors.red),
                 ],
               ),
               onTap:
@@ -120,7 +142,7 @@ class _ItemMenuState extends State<ItemMenu> {
           ],
         );
       },
-      child: const Icon(Icons.more_vert, color: Colors.black),
+      icon: const Icon(Icons.more_vert, color: Colors.black),
     );
   }
 }

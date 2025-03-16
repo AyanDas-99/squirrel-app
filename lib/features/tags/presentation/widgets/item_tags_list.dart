@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:squirrel_app/features/tags/presentation/bloc/tags_for_item_bloc.dart';
 
 class ItemTagsList extends StatelessWidget {
@@ -21,15 +22,14 @@ class ItemTagsList extends StatelessWidget {
                   runSpacing: 8,
                   children:
                       state.tags.map((tag) {
-                        return Container(
+                        return ShadBadge(
+                          backgroundColor: Colors.blueGrey.shade100,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 12,
                             vertical: 6,
                           ),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                          foregroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                           child: Text(tag.tag),
                         );
                       }).toList(),

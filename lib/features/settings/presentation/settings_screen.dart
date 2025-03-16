@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/core/auth/presentation/bloc/user_bloc.dart';
-import 'package:squirrel_app/core/auth/presentation/pages/login_screen.dart';
+import 'package:squirrel_app/core/widgets/confirm_dialog.dart';
 import 'package:squirrel_app/features/tags/presentation/widgets/tags_section.dart';
 import 'package:squirrel_app/features/users/presentation/screens/admin_user_management_screen.dart';
 import 'package:squirrel_app/screen_controller.dart';
@@ -48,12 +49,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () {
-              context.read<UserBloc>().add(LogoutEvent());
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => ScreenController()),
-                (route) => false,
+            onPressed: () async {
+              final canLogout = await showShadDialog(
+                animateIn: [
+                  FadeEffect(duration: const Duration(milliseconds: 100)),
+                ],
+                context: context,
+                builder:
+                    (context) => ConfirmDialog(
+                      title: "Do you want to logout?",
+                      description:
+                          "You can login again using username and password",
+                    ),
               );
+              if (canLogout == true && context.mounted) {
+                context.read<UserBloc>().add(LogoutEvent());
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => ScreenController()),
+                  (route) => false,
+                );
+              }
             },
           ),
         ],
@@ -71,6 +86,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 (index) => Padding(
                   padding: const EdgeInsets.only(right: 8.0),
                   child: ChoiceChip(
+                    showCheckmark: false,
                     label: Text(_settingCategories[index].$1),
                     selected: _selectedSettingIndex == index,
                     onSelected: (selected) {
