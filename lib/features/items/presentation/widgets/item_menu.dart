@@ -4,6 +4,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:squirrel_app/core/auth/data/models/auth_token_model.dart';
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/core/tokenParam.dart';
+import 'package:squirrel_app/core/utils/show_toaster.dart';
 import 'package:squirrel_app/core/widgets/confirm_dialog.dart';
 import 'package:squirrel_app/features/items/domain/entities/item.dart';
 import 'package:squirrel_app/features/items/domain/repositories/items_repositories.dart';
@@ -70,81 +71,102 @@ class _ItemMenuState extends State<ItemMenu> {
           ),
         ),
       );
-      Navigator.of(context).maybePop();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: () {
-        final RenderBox button = context.findRenderObject() as RenderBox;
-        final Offset offset = button.localToGlobal(Offset.zero);
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<RemoveItemBloc, RemoveItemState>(
+          listener: (context, state) {
+            switch (state) {
+              case RemoveItemError():
+                showToast(
+                  context: context,
+                  desc: state.message,
+                  isDestructive: true,
+                );
+              case ItemRemoved():
+                showToast(context: context, desc: "Item removed permanently!");
+                Navigator.of(context).maybePop();
+              default:
+            }
+          },
+        ),
+      ],
+      child: IconButton(
+        onPressed: () {
+          final RenderBox button = context.findRenderObject() as RenderBox;
+          final Offset offset = button.localToGlobal(Offset.zero);
 
-        showMenu(
-          popUpAnimationStyle: AnimationStyle(
-            duration: const Duration(milliseconds: 100),
-          ),
-          color: Colors.white,
-          context: context,
-          position: RelativeRect.fromLTRB(
-            offset.dx,
-            offset.dy + 40,
-            offset.dx,
-            offset.dy,
-          ),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-          menuPadding: const EdgeInsets.all(15),
-          items: [
-            PopupMenuItem(
-              child: Row(
-                children: [
-                  Text('Delete Item', style: TextStyle(fontSize: 16)),
-                  Spacer(),
-                  Icon(Icons.delete_forever, color: Colors.red),
-                ],
-              ),
-              onTap: _removeItem,
+          showMenu(
+            popUpAnimationStyle: AnimationStyle(
+              duration: const Duration(milliseconds: 100),
             ),
+            color: Colors.white,
+            context: context,
+            position: RelativeRect.fromLTRB(
+              offset.dx,
+              offset.dy + 40,
+              offset.dx,
+              offset.dy,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+            ),
+            menuPadding: const EdgeInsets.all(15),
+            items: [
+              PopupMenuItem(
+                child: Row(
+                  children: [
+                    Text('Delete Item', style: TextStyle(fontSize: 16)),
+                    Spacer(),
+                    Icon(Icons.delete_forever, color: Colors.red),
+                  ],
+                ),
+                onTap: _removeItem,
+              ),
 
-            PopupMenuItem(
-              child: Row(
-                children: [
-                  Text('Manage Tags', style: TextStyle(fontSize: 16)),
-                  Spacer(),
-                  Icon(Icons.tag, color: Colors.blue),
-                ],
+              PopupMenuItem(
+                child: Row(
+                  children: [
+                    Text('Manage Tags', style: TextStyle(fontSize: 16)),
+                    Spacer(),
+                    Icon(Icons.tag, color: Colors.blue),
+                  ],
+                ),
+                onTap: () => showTagModal(context),
               ),
-              onTap: () => showTagModal(context),
-            ),
 
-            PopupMenuItem(
-              child: Row(
-                children: [
-                  Text('Remove Stock', style: TextStyle(fontSize: 16)),
-                  Spacer(),
-                  Icon(Icons.remove, color: Colors.red),
-                ],
+              PopupMenuItem(
+                child: Row(
+                  children: [
+                    Text('Remove Stock', style: TextStyle(fontSize: 16)),
+                    Spacer(),
+                    Icon(Icons.remove, color: Colors.red),
+                  ],
+                ),
+                onTap:
+                    () => {
+                      showShadDialog(
+                        animateIn: const [
+                          FadeEffect(duration: Duration(milliseconds: 100)),
+                        ],
+                        context: context,
+                        builder:
+                            (context) => RemoveStockPage(
+                              item: widget.item,
+                              token: widget.token,
+                            ),
+                      ),
+                    },
               ),
-              onTap:
-                  () => {
-                    showShadDialog(
-                      animateIn: const [
-                        FadeEffect(duration: Duration(milliseconds: 100)),
-                      ],
-                      context: context,
-                      builder:
-                          (context) => RemoveStockPage(
-                            item: widget.item,
-                            token: widget.token,
-                          ),
-                    ),
-                  },
-            ),
-          ],
-        );
-      },
-      icon: const Icon(Icons.more_vert, color: Colors.black),
+            ],
+          );
+        },
+        icon: const Icon(Icons.more_vert, color: Colors.black),
+      ),
     );
   }
 }

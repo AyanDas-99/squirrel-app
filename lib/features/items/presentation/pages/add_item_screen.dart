@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:squirrel_app/core/auth/data/models/auth_token_model.dart';
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
+import 'package:squirrel_app/core/tokenParam.dart';
 import 'package:squirrel_app/core/utils/show_toaster.dart';
 import 'package:squirrel_app/core/widgets/confirm_dialog.dart';
+import 'package:squirrel_app/features/items/domain/repositories/items_repositories.dart';
 import 'package:squirrel_app/features/items/presentation/bloc/add_item_bloc.dart';
+import 'package:squirrel_app/features/items/presentation/bloc/item_bloc.dart';
 
 class AddItemScreen extends StatefulWidget {
   final AuthToken token;
@@ -104,7 +108,11 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 },
                 listener: (BuildContext context, AddItemState state) {
                   if (state is AddItemError) {
-                    showToast(context: context, desc: state.error, isDestructive: true);
+                    showToast(
+                      context: context,
+                      desc: state.error,
+                      isDestructive: true,
+                    );
                     Navigator.of(context).maybePop();
                   }
 
@@ -113,6 +121,19 @@ class _AddItemScreenState extends State<AddItemScreen> {
                       context: context,
                       desc: "${state.item.name} added!",
                     );
+
+                    context.read<ItemBloc>().add(
+                      GetItems(
+                        tokenparam: Tokenparam(
+                          token: AuthTokenModel(
+                            token: widget.token.token,
+                            expiry: widget.token.expiry,
+                          ),
+                          param: ItemsFilter(page: 1),
+                        ),
+                      ),
+                    );
+
                     Navigator.of(context).maybePop();
                   }
                 },

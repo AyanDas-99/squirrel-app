@@ -100,6 +100,7 @@ class _AddStockPageState extends State<AddStockPage> {
                     desc: state.message,
                     isDestructive: true,
                   );
+                  Navigator.pop(context);
                 }
               },
               builder: (context, state) {

@@ -100,7 +100,12 @@ class _IssueItemScreenState extends State<IssueItemScreen> {
                   _loadItem();
                   Navigator.pop(context);
                 } else if (state is IssueItemError) {
-                  showToast(context: context, desc: state.message, isDestructive: true);
+                  showToast(
+                    context: context,
+                    desc: state.message,
+                    isDestructive: true,
+                  );
+                  Navigator.pop(context);
                 }
               },
               builder: (context, state) {
@@ -121,10 +126,7 @@ class _IssueItemScreenState extends State<IssueItemScreen> {
                   child:
                       (state is ItemRefillLoading)
                           ? const Center(child: CircularProgressIndicator())
-                          : const Text(
-                            'Issue',
-                            style: TextStyle(fontSize: 16),
-                          ),
+                          : const Text('Issue', style: TextStyle(fontSize: 16)),
                 );
               },
             ),
