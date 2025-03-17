@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:developer' as dev;
-import 'dart:math';
 import 'package:http/http.dart' as http;
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/core/errors/exceptions.dart';
@@ -14,9 +12,17 @@ import 'package:squirrel_app/features/transactions/domain/entities/transaction.d
 
 abstract class TransactionsRemoteDatasource {
   /// Throws [AdditionsException], [RemovalsException] or [IssuesException]
-  Future<Transaction> getAllTransactions(Tokenparam<ItemIdAndTransactionFilter> tokenItemAndFilter);
+  Future<Transaction> getAllTransactions(
+    Tokenparam<ItemIdAndTransactionFilter> tokenItemAndFilter,
+  );
+
   /// Throws [ServerException], [UserException]
-  Future<Issue> issueItem({required AuthToken token, required int itemId, required int quantity ,required String issueTo}); 
+  Future<Issue> issueItem({
+    required AuthToken token,
+    required int itemId,
+    required int quantity,
+    required String issueTo,
+  });
 }
 
 class TransactionRemoteDatasourceImpl implements TransactionsRemoteDatasource {
@@ -33,7 +39,9 @@ class TransactionRemoteDatasourceImpl implements TransactionsRemoteDatasource {
 
   TransactionRemoteDatasourceImpl({required this.client});
   @override
-  Future<Transaction> getAllTransactions(Tokenparam<ItemIdAndTransactionFilter> tokenItemAndFilter) async {
+  Future<Transaction> getAllTransactions(
+    Tokenparam<ItemIdAndTransactionFilter> tokenItemAndFilter,
+  ) async {
     http.Response additionResult;
     http.Response issuesResult;
     http.Response removalsResult;
@@ -47,14 +55,14 @@ class TransactionRemoteDatasourceImpl implements TransactionsRemoteDatasource {
     // Getting additions
     try {
       additionResult = await client.get(
-        Uri.parse('$host/additions/${tokenItemAndFilter.param.itemId}?${tokenItemAndFilter.param.transactionFilter.toQuery()}'),
+        Uri.parse(
+          '$host/additions/${tokenItemAndFilter.param.itemId}?${tokenItemAndFilter.param.transactionFilter.toQuery()}',
+        ),
         headers: getHeader(tokenItemAndFilter.token),
       );
     } catch (e) {
       throw AdditionsException(message: e.toString());
     }
-
-    dev.log(additionResult.body);
 
     if (additionResult.statusCode == 200) {
       additions =
@@ -80,14 +88,14 @@ class TransactionRemoteDatasourceImpl implements TransactionsRemoteDatasource {
     // Getting removals
     try {
       removalsResult = await client.get(
-        Uri.parse('$host/removals/${tokenItemAndFilter.param.itemId}?${tokenItemAndFilter.param.transactionFilter.toQuery()}'),
+        Uri.parse(
+          '$host/removals/${tokenItemAndFilter.param.itemId}?${tokenItemAndFilter.param.transactionFilter.toQuery()}',
+        ),
         headers: getHeader(tokenItemAndFilter.token),
       );
     } catch (e) {
       throw RemovalsException(message: e.toString());
     }
-
-    dev.log(removalsResult.body);
 
     if (removalsResult.statusCode == 200) {
       removals =
@@ -100,14 +108,7 @@ class TransactionRemoteDatasourceImpl implements TransactionsRemoteDatasource {
       final removalMeta = Metadata.fromJson(
         json.decode(removalsResult.body)['metadata'],
       );
-      metadata.totalRecords = max(
-        metadata.totalRecords ?? 0,
-        removalMeta.totalRecords ?? 0,
-      );
-      metadata.lastPage = max(
-        metadata.lastPage ?? 0,
-        removalMeta.lastPage ?? 0,
-      );
+      metadata.takeHigher(removalMeta);
     } else if (removalsResult.statusCode == 500) {
       throw RemovalsException(
         message: json.decode(removalsResult.body)['error'],
@@ -121,14 +122,14 @@ class TransactionRemoteDatasourceImpl implements TransactionsRemoteDatasource {
     // Getting issues
     try {
       issuesResult = await client.get(
-        Uri.parse('$host/issues/${tokenItemAndFilter.param.itemId}?${tokenItemAndFilter.param.transactionFilter.toQuery()}'),
+        Uri.parse(
+          '$host/issues/${tokenItemAndFilter.param.itemId}?${tokenItemAndFilter.param.transactionFilter.toQuery()}',
+        ),
         headers: getHeader(tokenItemAndFilter.token),
       );
     } catch (e) {
       throw IssuesException(message: e.toString());
     }
-
-    dev.log(issuesResult.body);
 
     if (issuesResult.statusCode == 200) {
       issues =
@@ -139,11 +140,7 @@ class TransactionRemoteDatasourceImpl implements TransactionsRemoteDatasource {
       final issueMeta = Metadata.fromJson(
         json.decode(issuesResult.body)['metadata'],
       );
-      metadata.totalRecords = max(
-        metadata.totalRecords ?? 0,
-        issueMeta.totalRecords ?? 0,
-      );
-      metadata.lastPage = max(metadata.lastPage ?? 0, issueMeta.lastPage ?? 0);
+      metadata.takeHigher(issueMeta);
     } else if (issuesResult.statusCode == 500) {
       throw IssuesException(message: json.decode(issuesResult.body)['error']);
     } else {
@@ -160,9 +157,14 @@ class TransactionRemoteDatasourceImpl implements TransactionsRemoteDatasource {
     );
     return transaction;
   }
-  
+
   @override
-  Future<Issue> issueItem({required AuthToken token, required int itemId, required int quantity, required String issueTo}) async{
+  Future<Issue> issueItem({
+    required AuthToken token,
+    required int itemId,
+    required int quantity,
+    required String issueTo,
+  }) async {
     http.Response result;
     try {
       result = await client.post(
@@ -177,16 +179,13 @@ class TransactionRemoteDatasourceImpl implements TransactionsRemoteDatasource {
     } catch (e) {
       throw ServerException(message: e.toString());
     }
-    dev.log(result.body.toString());
 
     if (result.statusCode == 201) {
-      final issue = IssueModel.fromJson(
-        json.decode(result.body)['issue'],
-      );
+      final issue = IssueModel.fromJson(json.decode(result.body)['issue']);
       return issue;
     } else if (result.statusCode == 500) {
       throw ServerException(message: json.decode(result.body)['error']);
-    }  else {
+    } else {
       throw UserException(
         message: json.decode(result.body)['error'].toString(),
       );

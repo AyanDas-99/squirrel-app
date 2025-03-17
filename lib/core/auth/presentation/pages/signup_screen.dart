@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:squirrel_app/core/utils/show_toaster.dart';
 import 'package:squirrel_app/core/widgets/logo_image.dart';
 import 'package:squirrel_app/core/auth/presentation/bloc/user_bloc.dart';

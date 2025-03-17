@@ -23,6 +23,19 @@ class Metadata {
     );
   }
 
+  void takeHigher(Metadata meta) {
+    if (meta.totalRecords == null) {
+      return;
+    }
+    if (totalRecords == null || meta.totalRecords! > totalRecords!) {
+      currentPage = meta.currentPage;
+      pageSize = meta.pageSize;
+      firstPage = meta.firstPage;
+      lastPage = meta.lastPage;
+      totalRecords = meta.totalRecords;
+    }
+  }
+
   bool isAnyNull() {
     return (currentPage == null ||
         pageSize == null ||
