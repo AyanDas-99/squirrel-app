@@ -98,7 +98,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                           );
                           String name = _formKey.currentState!.value['name'];
                           String remarks =
-                              _formKey.currentState!.value['remarks'];
+                              _formKey.currentState!.value['remarks'] ?? "";
                           _addItem(name, quantity, remarks);
                         }
                       },

@@ -4,6 +4,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:squirrel_app/core/auth/data/models/auth_token_model.dart';
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/core/tokenParam.dart';
+import 'package:squirrel_app/core/widgets/error_text_widget.dart';
 import 'package:squirrel_app/core/widgets/loading_image.dart';
 import 'package:squirrel_app/core/widgets/logo_image.dart';
 import 'package:squirrel_app/features/items/domain/entities/item.dart';
@@ -151,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   TagsLoading() => const Center(
                     child: CircularProgressIndicator(),
                   ),
-                  TagsError() => Text(state.message),
+                  TagsError() => ErrorTextWidget(description: state.message),
                   TagsLoaded() => Wrap(
                     children:
                         state.tags.map((tag) {
@@ -188,7 +189,9 @@ class _HomeScreenState extends State<HomeScreen> {
               child: BlocConsumer<ItemBloc, ItemState>(
                 builder: (context, state) {
                   return switch (state) {
-                    ItemsError() => Center(child: Text(state.message)),
+                    ItemsError() => Center(
+                      child: ErrorTextWidget(description: state.message),
+                    ),
                     ItemsLoaded() => Column(
                       children: [
                         Padding(

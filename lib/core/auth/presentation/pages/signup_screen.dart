@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:squirrel_app/core/utils/show_toaster.dart';
@@ -100,7 +102,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               controller: passwordController,
                               obscureText: true,
                               decoration: InputDecoration(
-                                hintText: "Password",
+                                hintText: "Password (4 Character limit)",
                                 filled: true,
                                 fillColor: Colors.red.shade100,
                                 border: OutlineInputBorder(
@@ -193,6 +195,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     );
                   },
                   listener: (BuildContext context, UserState state) {
+                    dev.log(state.toString());
                     switch (state) {
                       case UserLoaded():
                         showToast(

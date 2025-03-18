@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'dart:developer' as dev;
 
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
+import 'package:squirrel_app/core/host.dart';
 import 'package:squirrel_app/core/tokenParam.dart';
 
 abstract class AuthDataSource {
@@ -26,8 +27,6 @@ abstract class AuthDataSource {
 }
 
 class AuthDataSourceImpl implements AuthDataSource {
-  final host = "http://10.0.2.2:8080";
-
   final http.Client client;
   AuthDataSourceImpl({required this.client});
 
@@ -58,19 +57,22 @@ class AuthDataSourceImpl implements AuthDataSource {
       throw ServerException(message: e.toString());
     }
     dev.log(result.body.toString());
-
-    if (result.statusCode == 201) {
-      return UserModel.fromJson(json.decode(result.body)['user']);
-    } else if (result.statusCode == 500) {
-      throw ServerException(message: result.body);
-    } else if (result.statusCode == 422) {
-      throw UserException(
-        message: json.decode(result.body)['error'].toString(),
-      );
-    } else {
-      throw UserException(
-        message: json.decode(result.body)['error'].toString(),
-      );
+    try {
+      if (result.statusCode == 201) {
+        return UserModel.fromJson(json.decode(result.body)['user']);
+      } else if (result.statusCode == 500) {
+        throw ServerException(message: result.body);
+      } else if (result.statusCode == 422) {
+        throw UserException(
+          message: json.decode(result.body)['error'].toString(),
+        );
+      } else {
+        throw UserException(
+          message: json.decode(result.body)['error'].toString(),
+        );
+      }
+    } catch (e) {
+      throw ServerException(message: e.toString());
     }
   }
 

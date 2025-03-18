@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
+import 'package:squirrel_app/core/widgets/error_text_widget.dart';
 import 'package:squirrel_app/features/tags/presentation/bloc/add_tag_for_item_bloc.dart';
 import 'package:squirrel_app/features/tags/presentation/bloc/remove_tag_for_item_bloc.dart';
 import 'package:squirrel_app/features/tags/presentation/bloc/tags_bloc.dart';
@@ -85,7 +86,7 @@ class _ManageItemTagsBottomSheetState extends State<ManageItemTagsBottomSheet> {
               TagsLoaded() => BlocBuilder<TagsForItemBloc, TagsForItemState>(
                 builder: (context, state) {
                   return switch (state) {
-                    TagsForItemError() => Center(child: Text(state.message)),
+                    TagsForItemError() => Center(child: ErrorTextWidget(description:state.message)),
                     TagsForItemLoaded() => Padding(
                       padding: EdgeInsets.all(16),
                       child: Column(

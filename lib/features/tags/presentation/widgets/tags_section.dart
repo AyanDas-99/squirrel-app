@@ -5,6 +5,7 @@ import 'package:squirrel_app/core/auth/data/models/auth_token_model.dart';
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/core/tokenParam.dart';
 import 'package:squirrel_app/core/widgets/confirm_dialog.dart';
+import 'package:squirrel_app/core/widgets/error_text_widget.dart';
 import 'package:squirrel_app/features/tags/presentation/bloc/tags_bloc.dart';
 
 class TagsSection extends StatefulWidget {
@@ -141,7 +142,7 @@ class _TagsSectionState extends State<TagsSection> {
                 TagsDeleted() => const Center(
                   child: CircularProgressIndicator(),
                 ),
-                TagsError() => Text(state.message),
+                TagsError() => ErrorTextWidget(description:state.message),
                 TagsLoaded() => ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: state.tags.length,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:squirrel_app/core/widgets/error_text_widget.dart';
 import 'package:squirrel_app/features/tags/presentation/bloc/tags_for_item_bloc.dart';
 
 class ItemTagsList extends StatelessWidget {
@@ -13,7 +14,7 @@ class ItemTagsList extends StatelessWidget {
         return switch (state) {
           TagsForItemInitial() => Center(child: CircularProgressIndicator()),
           TagsForItemLoading() => Center(child: CircularProgressIndicator()),
-          TagsForItemError() => Text(state.message),
+          TagsForItemError() => ErrorTextWidget(description:state.message),
           TagsForItemLoaded() =>
             (state.tags.isEmpty)
                 ? Container()

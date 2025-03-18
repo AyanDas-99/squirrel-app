@@ -4,6 +4,7 @@ import 'dart:developer' as dev;
 import 'package:http/http.dart' as http;
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/core/errors/exceptions.dart';
+import 'package:squirrel_app/core/host.dart';
 import 'package:squirrel_app/features/tags/data/models/tag_model.dart';
 import 'package:squirrel_app/features/tags/domain/entities/tag.dart';
 
@@ -19,7 +20,6 @@ abstract class TagRemoteDatasource {
 }
 
 class TagRemoteDatasourceImpl implements TagRemoteDatasource {
-  final host = "http://10.0.2.2:8080";
 
   final http.Client client;
   TagRemoteDatasourceImpl({required this.client});

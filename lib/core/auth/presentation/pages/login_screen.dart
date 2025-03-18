@@ -110,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               controller: passwordController,
                               obscureText: true,
                               decoration: InputDecoration(
-                                hintText: "Password",
+                                hintText: "Password (4 Character limit)",
                                 filled: true,
                                 fillColor: Colors.red.shade100,
                                 border: OutlineInputBorder(

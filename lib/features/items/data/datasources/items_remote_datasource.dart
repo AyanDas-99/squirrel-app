@@ -3,6 +3,7 @@ import 'dart:developer' as dev;
 import 'package:http/http.dart' as http;
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/core/errors/exceptions.dart';
+import 'package:squirrel_app/core/host.dart';
 import 'package:squirrel_app/core/metadata.dart';
 import 'package:squirrel_app/features/items/data/models/items_model.dart';
 import 'package:squirrel_app/features/items/domain/entities/item.dart';
@@ -57,7 +58,6 @@ abstract class ItemRemoteDatasource {
 }
 
 class ItemRemoteDatasourceImpl implements ItemRemoteDatasource {
-  final host = "http://10.0.2.2:8080";
 
   final http.Client client;
 

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/core/auth/domain/entities/user.dart';
+import 'package:squirrel_app/core/widgets/error_text_widget.dart';
 import 'package:squirrel_app/dependency_injection.dart';
 import 'package:squirrel_app/features/users/presentation/bloc/all_users_bloc.dart';
 import 'package:squirrel_app/features/users/presentation/bloc/user_permissions_bloc.dart';
@@ -13,11 +14,11 @@ class AdminUserManagementScreen extends StatefulWidget {
   const AdminUserManagementScreen({super.key, required this.token});
 
   @override
-  _AdminUserManagementScreenState createState() =>
-      _AdminUserManagementScreenState();
+  AdminUserManagementScreenState createState() =>
+      AdminUserManagementScreenState();
 }
 
-class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
+class AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
   int openIndex = -1;
 
   @override
@@ -35,7 +36,7 @@ class _AdminUserManagementScreenState extends State<AdminUserManagementScreen> {
     return BlocBuilder<AllUsersBloc, AllUsersState>(
       builder: (context, state) {
         return switch (state) {
-          AllUsersError() => Center(child: Text(state.message)),
+          AllUsersError() => Center(child: ErrorTextWidget(description:state.message)),
           AllUsersLoaded() => _buildBody(state.users),
           _ => Center(child: CircularProgressIndicator()),
         };

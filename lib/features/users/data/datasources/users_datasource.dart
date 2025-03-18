@@ -5,6 +5,7 @@ import 'package:squirrel_app/core/auth/data/models/user_model.dart';
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/core/auth/domain/entities/user.dart';
 import 'package:squirrel_app/core/errors/exceptions.dart';
+import 'package:squirrel_app/core/host.dart';
 
 abstract class UsersDatasource {
   // Throws exception [UserException] or [ServerException]
@@ -21,7 +22,6 @@ abstract class UsersDatasource {
 }
 
 class UsersDatasourceImpl extends UsersDatasource {
-  final host = "http://10.0.2.2:8080";
 
   final http.Client client;
   UsersDatasourceImpl({required this.client});

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/core/errors/exceptions.dart';
+import 'package:squirrel_app/core/host.dart';
 import 'package:squirrel_app/core/metadata.dart';
 import 'package:squirrel_app/core/tokenParam.dart';
 import 'package:squirrel_app/features/transactions/data/models/addition_model.dart';
@@ -28,7 +29,6 @@ abstract class TransactionsRemoteDatasource {
 class TransactionRemoteDatasourceImpl implements TransactionsRemoteDatasource {
   final http.Client client;
 
-  final host = "http://10.0.2.2:8080";
 
   Map<String, String> getHeader(AuthToken token) {
     return {

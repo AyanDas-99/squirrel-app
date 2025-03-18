@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:squirrel_app/core/auth/domain/entities/auth_token.dart';
 import 'package:squirrel_app/core/auth/domain/entities/user.dart';
+import 'package:squirrel_app/core/widgets/error_text_widget.dart';
 import 'package:squirrel_app/features/users/domain/usecases/update_permission.dart';
 import 'package:squirrel_app/features/users/presentation/bloc/update_permission_bloc.dart';
 import 'package:squirrel_app/features/users/presentation/bloc/user_permissions_bloc.dart';
@@ -92,7 +93,9 @@ class _UserCardState extends State<UserCard> {
               },
               builder: (context, state) {
                 return switch (state) {
-                  UserPermissionsError() => Center(child: Text(state.message)),
+                  UserPermissionsError() => Center(
+                    child: ErrorTextWidget(description: state.message),
+                  ),
                   UserPermissionsLoaded() => Column(
                     children: [
                       // Read Permission Switch
